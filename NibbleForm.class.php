@@ -36,7 +36,7 @@ abstract class FormField {
   /**
    * Return the current field, i.e label and input
    */
-  abstract public function returnField($name, $value='');
+  abstract public function returnField($name, $value = '');
 
   /**
    * Validate the current field
@@ -230,26 +230,40 @@ FORM;
 
 class Text extends FormField {
 
-  protected $label;
-  protected $required;
-  protected $max_length;
-  protected $content;
+  protected $label, $content;
+  protected $attribute_string, $class = '';
+  protected $required = true;
   public $error = array();
   public $field_type = 'text';
 
-  public function __construct($label, $required = true, $max_length = 255, $content = '/.*/') {
+  public function __construct($label, $attributes = array(), $content = '/.*/') {
     $this->label = $label;
-    $this->required = $required;
-    $this->max_length = $max_length;
+    if (isset($attributes['required']))
+      $this->required = $attributes['required'];
+    else
+      $attributes['required'] = true;
+    $this->attributes = $attributes;
     $this->content = $content;
   }
 
-  public function returnField($name, $value = '', $type='text') {
-    $class = !empty($this->error) ? ' class="error"' : '';
+  public function attributeString() {
+    if (!empty($this->error))
+      $this->class = 'error';
+    $this->attribute_string = '';
+    foreach ($this->attributes as $attribute => $val) {
+      if ($attribute == 'class')
+        $this->class.= ' ' . $val;
+      else
+        $this->attribute_string .= $val ? ' ' . ($val === true ? $attribute : "$attribute=\"$val\"") : '';
+    }
+  }
+
+  public function returnField($name, $value = '') {
+    $this->attributeString();
     return array(
         'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
-        'label' => $this->label == false ? false : sprintf('<label for="%s"%s>%s</label>', $name, $class, $this->label),
-        'field' => sprintf('<input type="%5$s" name="%1$s" id="%1$s" value="%2$s" maxlength="%3$s"%4$s />', $name, $value, $this->max_length, $class, $this->field_type),
+        'label' => $this->label === false ? false : sprintf('<label for="%s" class="%s">%s</label>', $name, $this->class, $this->label),
+        'field' => sprintf('<input type="%1$s" name="%2$s" id="%2$s" value="%3$s" %4$s class="%5$s" />', $this->field_type, $name, $value, $this->attribute_string, $this->class),
         'html' => $this->html
     );
   }
@@ -261,7 +275,7 @@ class Text extends FormField {
     if (Useful::stripper($val) !== false)
       if (!preg_match($this->content, $val))
         $this->error[] = 'is not valid';
-    return!empty($this->error) ? false : true;
+    return !empty($this->error) ? false : true;
   }
 
 }
@@ -276,7 +290,7 @@ class Url extends Text {
         if (!filter_var($val, FILTER_VALIDATE_URL))
           $this->error[] = 'must be a valid URL';
       }
-    return!empty($this->error) ? false : true;
+    return !empty($this->error) ? false : true;
   }
 
   public function returnField($name, $value = '') {
@@ -304,7 +318,7 @@ class Email extends Text {
         $form->{$this->confirm}->error[] = 'must match email';
       }
     }
-    return!empty($this->error) ? false : true;
+    return !empty($this->error) ? false : true;
   }
 
   public function addConfirmation($label, $open_field = false, $close_field = false, $open_html = false, $close_html = false) {
@@ -313,11 +327,11 @@ class Email extends Text {
       $i = 2;
       while ($form->checkField('confirm_email_' . $i))
         $i++;
-      $form->{'confirm_email_' . $i} = new Email($label, $this->required, $this->max_length, $this->content);
+      $form->{'confirm_email_' . $i} = new Email($label, $this->attributes, $this->content);
       $form->{'confirm_email_' . $i}->customHtml($open_field, $close_field, $open_html, $close_html);
       $this->confirm = 'confirm_email_' . $i;
     } else {
-      $form->confirm_email = new Email($label, $this->required, $this->max_length, $this->content);
+      $form->confirm_email = new Email($label, $this->attributes, $this->content);
       $form->confirm_email->customHtml($open_field, $close_field, $open_html, $close_html);
       $this->confirm = 'confirm_email';
     }
@@ -333,13 +347,15 @@ class Email extends Text {
 class Password extends Text {
 
   private $confirm = false;
-  private $min_length;
-  private $alphanumeric;
+  private $min_length = false;
+  private $alphanumeric = false;
 
-  public function __construct($label, $min_length = 6, $alphanumeric = true, $required = true, $max_length = 255, $content = '/.*/') {
-    parent::__construct($label, $required, $max_length, $content);
-    $this->alphanumeric = $alphanumeric;
-    $this->min_length = $min_length;
+  public function __construct($label, $attributes = array(), $content = '/.*/') {
+    parent::__construct($label, $attributes, $content);
+    if (isset($attributes['alphanumeric']))
+      $this->alphanumeric = $attributes['alphanumeric'];
+    if (isset($attributes['min_length']))
+      $this->min_length = $attributes['min_length'];
   }
 
   public function validate($val) {
@@ -347,9 +363,9 @@ class Password extends Text {
       return false;
     if (parent::validate($val)) {
       if (Useful::stripper($val) !== false) {
-        if (strlen($val) < $this->min_length)
+        if ($this->min_length && strlen($val) < $this->min_length)
           $this->error[] = sprintf('must be more than %s characters', $this->min_length);
-        if ($this->alphanumeric && (!preg_match("#[A-Za-z]+#", $val) || !preg_match("#[0-9]+#", $val)))
+        if ($this->alphanumeric && (!preg_match("/[A-Za-z]+/", $val) || !preg_match("/[0-9]+/", $val)))
           $this->error[] = 'must have at least one alphabetic character and one numeric character';
       }
     }
@@ -359,7 +375,7 @@ class Password extends Text {
         $form->{$this->confirm}->error[] = 'must match password';
       }
     }
-    return!empty($this->error) ? false : true;
+    return !empty($this->error) ? false : true;
   }
 
   public function returnField($name, $value = '') {
@@ -373,11 +389,11 @@ class Password extends Text {
       $i = 2;
       while ($form->checkField('confirm_password_' . $i))
         $i++;
-      $form->{'confirm_password_' . $i} = new Password($label, $this->min_length, $this->alphanumeric, $this->required, $this->max_length, $this->content);
+      $form->{'confirm_password_' . $i} = new Password($label, $this->attributes, $this->content);
       $form->{'confirm_password_' . $i}->customHtml($open_field, $close_field, $open_html, $close_html);
       $this->confirm = 'confirm_password_' . $i;
     } else {
-      $form->confirm_password = new Password($label, $this->min_length, $this->alphanumeric, $this->required, $this->max_length, $this->content);
+      $form->confirm_password = new Password($label, $this->attributes, $this->content);
       $form->confirm_password->customHtml($open_field, $close_field, $open_html, $close_html);
       $this->confirm = 'confirm_password';
     }
@@ -387,23 +403,20 @@ class Password extends Text {
 
 class TextArea extends Text {
 
-  private $class;
-  private $rows;
-  private $cols;
-
-  public function __construct($label, $class = '', $required = true, $rows = 10, $cols = 60, $content = '/.*/') {
-    parent::__construct($label, $required, false, $content);
-    $this->class = $class;
-    $this->rows = $rows;
-    $this->cols = $cols;
+  public function __construct($label, $attributes, $content = '/.*/') {
+    parent::__construct($label, $attributes, $content);
+    if (!isset($attributes['rows']))
+      $attributes['rows'] = 6;
+    if (!isset($attributes['cols']))
+      $attributes['cols'] = 60;
   }
 
   public function returnField($name, $value = '') {
-    $class = !empty($this->error) ? ' class="error"' : '';
+    $this->attributeString();
     return array(
         'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
-        'label' => $this->label == false ? false : sprintf('<label for="%s"%s>%s</label>', $name, $class, $this->label),
-        'field' => sprintf('<textarea name="%1$s" id="%1$s" class="%2$s" rows="%4$s" cols="%5$s">%3$s</textarea>', $name, $this->class, $value, $this->rows, $this->cols),
+        'label' => $this->label == false ? false : sprintf('<label for="%s" class="%s">%s</label>', $name, $this->class, $this->label),
+        'field' => sprintf('<textarea name="%1$s" id="%1$s" class="%2$s" %4$s>%3$s</textarea>', $name, $this->class, $value, $this->attribute_string),
         'html' => $this->html
     );
   }
@@ -431,7 +444,7 @@ abstract class Options extends FormField {
         $this->error[] = 'is required';
     if (in_array($val, $this->false_values))
       $this->error[] = 'is not a valid selection';
-    return!empty($this->error) ? false : true;
+    return !empty($this->error) ? false : true;
   }
 
 }
@@ -501,7 +514,7 @@ abstract class MultipleOptions extends FormField {
         $this->error[] = sprintf('at least %s options must be selected', $this->minimum_selected);
     } elseif ($this->required)
       $this->error[] = 'is required';
-    return!empty($this->error) ? false : true;
+    return !empty($this->error) ? false : true;
   }
 
 }
@@ -648,7 +661,7 @@ class File extends FormField {
       } elseif (!in_array($val['type'], $this->mime_types))
         $this->error[] = $this->error_types[$this->type];
     }
-    return!empty($this->error) ? false : true;
+    return !empty($this->error) ? false : true;
   }
 
 }
@@ -721,8 +734,8 @@ FIELD;
       $response .= fgets($fs, 1160); // One TCP-IP packet
     fclose($fs);
     $response = explode("\r\n\r\n", $response);
-    $response = explode("\n",$response[1]);
-    if(!isset($response[0])||$response[0] != 'true')
+    $response = explode("\n", $response[1]);
+    if (!isset($response[0]) || $response[0] != 'true')
       $this->error[] = 'You failed to prove you humanity';
     //curl_close($ch);
     return empty($this->error) ? true : false;

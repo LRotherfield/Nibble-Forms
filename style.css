@@ -1,0 +1,8 @@
+body{font-family:verdana,monospace;}
+/* JNotice css */
+.notice-wrap {position: fixed;top: 20px;right: 20px;width: 250px;z-index: 9999;}
+* html .notice-wrap {position: absolute;}
+.notice-item h2{color:#fff;border-bottom:solid 1px #fff;font-size:1.1em;}
+.notice-item p{padding:10px;}
+.notice-item {background: #333;font-size: 0.8em;-moz-border-radius: 6px;-webkit-border-radius: 6px;color: #eee;padding: 6px 6px 0 6px;display: block;position: relative;margin: 0 0 12px 0;}
+.notice-item-close {position: absolute;font-size: 1.4em;font-weight: bold;right: 6px;top: 6px;cursor: pointer;}

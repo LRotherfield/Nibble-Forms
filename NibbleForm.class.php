@@ -275,7 +275,7 @@ class Text extends FormField {
     if (Useful::stripper($val) !== false)
       if (!preg_match($this->content, $val))
         $this->error[] = 'is not valid';
-    return !empty($this->error) ? false : true;
+    return!empty($this->error) ? false : true;
   }
 
 }
@@ -290,7 +290,7 @@ class Url extends Text {
         if (!filter_var($val, FILTER_VALIDATE_URL))
           $this->error[] = 'must be a valid URL';
       }
-    return !empty($this->error) ? false : true;
+    return!empty($this->error) ? false : true;
   }
 
   public function returnField($name, $value = '') {
@@ -318,7 +318,7 @@ class Email extends Text {
         $form->{$this->confirm}->error[] = 'must match email';
       }
     }
-    return !empty($this->error) ? false : true;
+    return!empty($this->error) ? false : true;
   }
 
   public function addConfirmation($label, $open_field = false, $close_field = false, $open_html = false, $close_html = false) {
@@ -375,7 +375,7 @@ class Password extends Text {
         $form->{$this->confirm}->error[] = 'must match password';
       }
     }
-    return !empty($this->error) ? false : true;
+    return!empty($this->error) ? false : true;
   }
 
   public function returnField($name, $value = '') {
@@ -425,17 +425,18 @@ class TextArea extends Text {
 
 abstract class Options extends FormField {
 
-  protected $label;
-  protected $options;
-  protected $required;
-  protected $false_values;
+  protected $label, $options;
+  protected $required = true;
+  protected $false_values = false;
   public $error = array();
 
-  public function __construct($label, $options, $required = true, $false_values = array()) {
+  public function __construct($label, $options = array(), $attributes = array()) {
     $this->label = $label;
-    $this->options = (array) $options;
-    $this->required = $required;
-    $this->false_values = $false_values;
+    $this->options = $options;
+    if (isset($attributes['required']))
+      $this->required = $attributes['required'];
+    if (isset($attributes['false_values']))
+      $this->false_values = $attributes['false_values'];
   }
 
   public function validate($val) {
@@ -444,7 +445,7 @@ abstract class Options extends FormField {
         $this->error[] = 'is required';
     if (in_array($val, $this->false_values))
       $this->error[] = 'is not a valid selection';
-    return !empty($this->error) ? false : true;
+    return!empty($this->error) ? false : true;
   }
 
 }
@@ -455,7 +456,7 @@ class Radio extends Options {
     $field = '';
     foreach ($this->options as $key => $val)
       $field .= sprintf('<input type="radio" name="%1$s" id="%3$s" value="%2$s" %4$s/>' .
-              '<label for=%3$s>%5$s</label>'
+              '<label for="%3$s">%5$s</label>'
               , $name, $key, Useful::slugify($name) . '_' . Useful::slugify($key), ((string) $key === (string) $value ? 'checked="checked"' : ''), $val);
     $class = !empty($this->error) ? ' class="error"' : '';
     return array(
@@ -501,11 +502,13 @@ abstract class MultipleOptions extends FormField {
   protected $minimum_selected;
   public $error = array();
 
-  public function __construct($label, $options, $required = true, $minimum_selected = false) {
+  public function __construct($label, $options, $attributes = array()) {
     $this->label = $label;
     $this->options = (array) $options;
-    $this->required = $required;
-    $this->minimum_selected = $minimum_selected;
+    if (isset($attributes['required']))
+      $this->required = $attributes['required'];
+    if (isset($attributes['minimum_selected']))
+      $this->minimum_selected = $attributes['minimum_selected'];
   }
 
   public function validate($val) {
@@ -514,7 +517,7 @@ abstract class MultipleOptions extends FormField {
         $this->error[] = sprintf('at least %s options must be selected', $this->minimum_selected);
     } elseif ($this->required)
       $this->error[] = 'is required';
-    return !empty($this->error) ? false : true;
+    return!empty($this->error) ? false : true;
   }
 
 }
@@ -540,11 +543,12 @@ class Checkbox extends MultipleOptions {
 
 class MultipleSelect extends MultipleOptions {
 
-  protected $show_size;
+  protected $show_size = false;
 
-  public function __construct($label, $options, $show_size = false, $required = true, $minimum_selected = false) {
-    parent::__construct($label, $options, $required, $minimum_selected);
-    $this->show_size = $show_size;
+  public function __construct($label, $options, $attributes = array()) {
+    parent::__construct($label, $options, $attributes);
+    if (isset($attributes['show_size']))
+      $this->show_size = $attributes['show_size'];
   }
 
   public function returnField($name, $value = '') {
@@ -661,7 +665,7 @@ class File extends FormField {
       } elseif (!in_array($val['type'], $this->mime_types))
         $this->error[] = $this->error_types[$this->type];
     }
-    return !empty($this->error) ? false : true;
+    return!empty($this->error) ? false : true;
   }
 
 }

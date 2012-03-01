@@ -423,21 +423,44 @@ class TextArea extends Text {
 
 }
 
-abstract class Options extends FormField {
-
+abstract class BaseOptions extends FormField{
+  
   protected $label, $options;
   protected $required = true;
-  protected $false_values = false;
   public $error = array();
-
+  
   public function __construct($label, $options = array(), $attributes = array()) {
     $this->label = $label;
     $this->options = $options;
     if (isset($attributes['required']))
       $this->required = $attributes['required'];
+  }
+  
+  public function getAttributeString($val) {
+    $attribute_string = '';
+    if (is_array($val)) {
+      $attributes = $val;
+      $val = $val[0];
+      unset($attributes[0]);
+      foreach ($attributes as $attribute => $arg) {
+        $attribute_string .= $arg ? ' ' . ($arg === true ? $attribute : "$attribute=\"$arg\"") : '';
+      }
+    }
+    return array('val' => $val, 'string' => $attribute_string);
+  }
+}
+
+abstract class Options extends BaseOptions {
+
+  protected $false_values = false;
+
+  public function __construct($label, $options = array(), $attributes = array()) {
+    parent::__construct($label, $options, $attributes);
     if (isset($attributes['false_values']))
       $this->false_values = $attributes['false_values'];
   }
+  
+  
 
   public function validate($val) {
     if ($this->required)
@@ -454,10 +477,12 @@ class Radio extends Options {
 
   public function returnField($name, $value = '') {
     $field = '';
-    foreach ($this->options as $key => $val)
+    foreach ($this->options as $key => $val) {
+      $attributes = $this->getAttributeString($val);
       $field .= sprintf('<input type="radio" name="%1$s" id="%3$s" value="%2$s" %4$s/>' .
               '<label for="%3$s">%5$s</label>'
-              , $name, $key, Useful::slugify($name) . '_' . Useful::slugify($key), ((string) $key === (string) $value ? 'checked="checked"' : ''), $val);
+              , $name, $key, Useful::slugify($name) . '_' . Useful::slugify($key), ((string) $key === (string) $value ? 'checked="checked"' : '') . $attributes['string'], $attributes['val']);
+    }
     $class = !empty($this->error) ? ' class="error"' : '';
     return array(
         'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
@@ -480,8 +505,10 @@ class Select extends Options {
 
   public function returnField($name, $value = '') {
     $field = sprintf('<select name="%1$s" id="%1$s" %2$s>', $name, ($this->show_size ? "size='$this->show_size'" : ''));
-    foreach ($this->options as $key => $val)
-      $field .= sprintf('<option value="%s" %s>%s</option>', $key, ((string) $key === (string) $value ? 'selected="selected"' : ''), $val);
+    foreach ($this->options as $key => $val){
+      $attributes = $this->getAttributeString($val);
+      $field .= sprintf('<option value="%s" %s>%s</option>', $key, ((string) $key === (string) $value ? 'selected="selected"' : '').$attributes['string'], $attributes['val']);
+    }
     $field .= '</select>';
     $class = !empty($this->error) ? ' class="error"' : '';
     return array(
@@ -494,19 +521,13 @@ class Select extends Options {
 
 }
 
-abstract class MultipleOptions extends FormField {
+abstract class MultipleOptions extends BaseOptions {
 
-  protected $label;
-  protected $options;
-  protected $required;
-  protected $minimum_selected;
-  public $error = array();
+  protected $minimum_selected = false;
+
 
   public function __construct($label, $options, $attributes = array()) {
-    $this->label = $label;
-    $this->options = (array) $options;
-    if (isset($attributes['required']))
-      $this->required = $attributes['required'];
+    parent::__construct($label, $options, $attributes);
     if (isset($attributes['minimum_selected']))
       $this->minimum_selected = $attributes['minimum_selected'];
   }

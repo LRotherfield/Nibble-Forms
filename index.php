@@ -19,6 +19,7 @@ if (isset($_POST['submit'])) {
     echo 'Invalid';
   }
 }
+$form->checkers = new MultipleSelect('check boxes dude', array(array('data-luke'=>'2five','Luke'),'Ben'), array('data-price'=>100));
 ?>
 <!doctype html>
 <html>

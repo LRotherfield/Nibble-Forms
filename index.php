@@ -7,6 +7,8 @@ session_set_cookie_params(30 * 60);
 session_start();
 include dirname(__FILE__) . '/NibbleForm.class.php';
 $form = NibbleForm::getInstance('', 'Submit this form', 'post', true, 'list');
+$form->id = new Hidden(array('class'=>'example class'));
+$form->number = new Number('Numeric please',array('class'=>'example class'));
 $form->username = new Text('Please enter your username', array(
             'class' => 'testy classes',
             'max_length' => 20), '/[a-zA-Z0-9]+/');

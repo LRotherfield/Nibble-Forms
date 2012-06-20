@@ -65,17 +65,10 @@ abstract class FormField
 class NibbleForm
 {
 
-    private $action;
-    private $method;
-    private $submit_value;
-    private $fields;
-    private $data = array();
-    private $sticky;
-    private $format;
+    private $action, $method, $submit_value, $fields, $sticky, $format, $message_type, $flash, $multiple_errors;
     private $valid = true;
-    private $message_type;
-    private $flash;
     private $messages = '';
+    private $data = array();
     private $formats = array(
         'list' => array(
             'open_form' => '<ul>',
@@ -102,7 +95,6 @@ class NibbleForm
             'close_submit' => '</td></tr></tfoot>'
         )
     );
-    private $multiple_errors;
     public static $instance;
 
     public function __construct($action, $submit_value, $method, $sticky, $message_type, $format, $multiple_errors)
@@ -123,8 +115,9 @@ class NibbleForm
 
     public static function getInstance($action = '/', $submit_value = 'Submit', $method = 'post', $sticky = true, $message_type = 'list', $format = 'list', $multiple_errors = false)
     {
-        if (!self::$instance)
+        if (!self::$instance) {
             self::$instance = new NibbleForm($action, $submit_value, $method, $sticky, $message_type, $format, $multiple_errors);
+        }
         return self::$instance;
     }
 
@@ -155,21 +148,25 @@ class NibbleForm
             $this->valid = false;
         }
         $_SESSION['token'] = array();
-        if ($this->sticky)
+        if ($this->sticky) {
             $this->addData($_POST);
-        foreach ($this->fields as $key => $value)
-            if (!$value->validate((isset($_POST[$key]) ? $_POST[$key] : (isset($_FILES[$key]) ? $_FILES[$key] : ''))))
+        }
+        foreach ($this->fields as $key => $value) {
+            if (!$value->validate((isset($_POST[$key]) ? $_POST[$key] : (isset($_FILES[$key]) ? $_FILES[$key] : '')))) {
                 $this->valid = false;
+            }
+        }
         return $this->valid;
     }
 
     private function setMessages($message, $title)
     {
         $title = preg_replace('/_/', ' ', ucfirst($title));
-        if ($this->message_type == 'flash')
+        if ($this->message_type == 'flash') {
             $this->flash->message(ucfirst($message), $title, 0, true);
-        elseif ($this->message_type == 'list')
+        } elseif ($this->message_type == 'list') {
             $this->messages[] = array('title' => $title, 'message' => ucfirst($message));
+        }
     }
 
     private function buildMessages()
@@ -183,8 +180,9 @@ class NibbleForm
 
     public function render()
     {
-        if (!isset($_SESSION['token']))
+        if (!isset($_SESSION['token'])) {
             $_SESSION['token'] = array();
+        }
         $_SESSION['token'][] = Useful::randomString(20);
         $fields = '';
         $error = $this->valid ? '' : '<p class="error">Sorry there were some errors in the form, problem fields have been highlighted</p>';
@@ -193,34 +191,42 @@ class NibbleForm
         foreach ($this->fields as $key => $value) {
             $format = (object) $this->formats[$this->format];
             $temp = isset($this->data[$key]) ? $value->returnField($key, $this->data[$key]) : $value->returnField($key);
-            if ($temp['html']['close_field'] !== false)
+            if ($temp['html']['close_field'] !== false) {
                 $format->close_field = $temp['html']['close_field'];
-            if ($temp['html']['close_html'] !== false)
+            }
+            if ($temp['html']['close_html'] !== false) {
                 $format->close_html = $temp['html']['close_html'];
-            if ($temp['html']['open_field'] !== false)
+            }
+            if ($temp['html']['open_field'] !== false) {
                 $format->open_field = $temp['html']['open_field'];
-            if ($temp['html']['open_html'] !== false)
+            }
+            if ($temp['html']['open_html'] !== false) {
                 $format->open_html = $temp['html']['open_html'];
+            }
             $fields .= $format->open_field;
-            if ($temp['label'])
+            if ($temp['label']) {
                 $fields .= $format->open_html . $temp['label'] . $format->close_html;
+            }
             if (isset($temp['messages'])) {
                 foreach ($temp['messages'] as $message) {
-                    if ($this->message_type == 'inline')
+                    if ($this->message_type == 'inline') {
                         $fields .= $format->open_html . '<p class="error">This field ' . $message . '</p>' . $format->close_html;
-                    else
+                    } else {
                         $this->setMessages($message, $key);
-                    if (!$this->multiple_errors)
+                    }
+                    if (!$this->multiple_errors) {
                         break;
+                    }
                 }
             }
             $fields .= $format->open_html . $temp['field'] . $format->close_html . $format->close_field;
         }
 
-        if (!empty($this->messages))
+        if (!empty($this->messages)) {
             $this->buildMessages();
-        else
+        } else {
             $this->messages = false;
+        }
         $token = $_SESSION['token'][count($_SESSION['token']) - 1];
         self::$instance = false;
         return <<<FORM
@@ -238,6 +244,73 @@ class NibbleForm
       $format->close_form
     </form>
 FORM;
+    }
+
+    public function renderField($name)
+    {
+        return $this->getFieldData($name, 'field');
+    }
+
+    public function renderLabel($name)
+    {
+        return $this->getFieldData($name, 'label');
+    }
+
+    public function renderError($name)
+    {
+        $errors = '';
+        foreach ($this->getFieldData($name, 'messages') as $error) {
+            $errors .= $error;
+        }
+        return $errors;
+    }
+
+    private function getFieldData($name, $key)
+    {
+        $field = $this->$name;
+        if (isset($this->data[$name])) {
+            $field = $field->returnField($name, $this->data[$name]);
+        } else {
+            $field = $field->returnField($name);
+        }
+        return $field[$key];
+    }
+
+    public function openForm()
+    {
+        $multipart = false;
+        foreach ($this->fields as $field) {
+            if (get_class($field) == 'File') {
+                $multipart = true;
+            }
+        }
+        return "<form class=\"form\" action=\"$this->action\" method=\"$this->method\"" . ($multipart ? 'enctype="multipart/form-data"' : '') . ">";
+    }
+    public function closeForm()
+    {
+        return "</form>"; 
+    }
+
+    public function renderHidden()
+    {
+        $field = $this->$name;
+        if (isset($this->data[$name])) {
+            $field = $field->returnField($name, $this->data[$name]);
+        } else {
+            $field = $field->returnField($name);
+        }
+        return $field['field'];
+    }
+
+    public function renderErrors()
+    {
+        $field = $this->$name;
+        if (isset($this->data[$name])) {
+            $field = $field->returnField($name, $this->data[$name]);
+        } else {
+            $field = $field->returnField($name);
+        }
+        return $field['field'];
     }
 
 }
@@ -301,16 +374,18 @@ class Text extends FormField
 
 class Hidden extends Text
 {
+
     public function __construct($attributes = array(), $label = false, $content = '/.*/')
     {
         parent::__construct($label, $attributes, $content);
     }
-    
+
     public function returnField($name, $value = '')
     {
         $this->field_type = 'hidden';
         return parent::returnField($name, $value);
     }
+
 }
 
 class Url extends Text

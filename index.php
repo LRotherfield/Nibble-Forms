@@ -13,6 +13,7 @@ $form->username = new Text('Please enter your username', array(
             'class' => 'testy classes',
             'max_length' => 20), '/[a-zA-Z0-9]+/');
 $form->email = new Email('Please enter your email', array('required' => false));
+$form->file = new File('Image');
 $form->email->addConfirmation('Please confirm your email');
 if (isset($_POST['submit'])) {
   if ($form->validate()) {
@@ -27,12 +28,18 @@ $form->checkers = new MultipleSelect('check boxes dude', array(array('data-luke'
 <html>
   <head>
 
-    <title>Example flash messaging</title>
+    <title>Nibble Forms Demo</title>
     <script src="http://www.google.com/jsapi" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
 
   </head>
   <body>
+      <?php echo $form->openForm() ?>
+      <?php echo $form->renderField('number') ?>
+      <?php echo $form->renderLabel('number') ?>
+      <?php echo $form->renderError('number') ?>
+      <?php echo $form->closeForm() ?>
+      
     <?php echo $form->render() ?>
   </body>
 </html>

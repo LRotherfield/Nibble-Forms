@@ -23,16 +23,9 @@
  * THE SOFTWARE.
  */
 
-abstract class FormField
-{
+abstract class FormField {
 
     public $custom_error = array();
-    public $html = array(
-        'open_field' => false,
-        'close_field' => false,
-        'open_html' => false,
-        'close_html' => false
-    );
 
     /**
      * Return the current field, i.e label and input
@@ -47,23 +40,13 @@ abstract class FormField
     /**
      * Apply custom error message from user to field
      */
-    public function errorMessage($message)
-    {
+    public function errorMessage($message) {
         $this->custom_error[] = $message;
-    }
-
-    /**
-     * Apply custom html to open and close of field
-     */
-    public function customHtml($open_field = false, $close_field = false, $open_html = false, $close_html = false)
-    {
-        $this->html = array('open_field' => $open_field, 'close_field' => $close_field, 'open_html' => $open_html, 'close_html' => $close_html);
     }
 
 }
 
-class NibbleForm
-{
+class NibbleForm {
 
     private $action, $method, $submit_value, $fields, $sticky, $format, $message_type, $flash, $multiple_errors;
     private $valid = true;
@@ -97,8 +80,7 @@ class NibbleForm
     );
     public static $instance;
 
-    public function __construct($action, $submit_value, $method, $sticky, $message_type, $format, $multiple_errors)
-    {
+    public function __construct($action, $submit_value, $method, $sticky, $message_type, $format, $multiple_errors) {
         $this->fields = new stdClass();
         $this->action = $action;
         $this->method = $method;
@@ -107,42 +89,49 @@ class NibbleForm
         $this->format = $format;
         $this->message_type = $message_type;
         $this->multiple_errors = $multiple_errors;
-        if ($message_type == 'flash')
+        if ($message_type == 'flash') {
             $this->flash = Flash::getInstance();
-        if ($message_type == 'list')
+        }
+        if ($message_type == 'list') {
             $this->messages = array();
+        }
     }
 
-    public static function getInstance($action = '/', $submit_value = 'Submit', $method = 'post', $sticky = true, $message_type = 'list', $format = 'list', $multiple_errors = false)
-    {
+    /**
+     * 
+     * @param string $action
+     * @param string $submit_value
+     * @param string $method
+     * @param boolean $sticky
+     * @param string $message_type
+     * @param string $format
+     * @param string $multiple_errors
+     * @return \Nibble\NibbleForm
+     */
+    public static function getInstance($action = '/', $submit_value = 'Submit', $method = 'post', $sticky = true, $message_type = 'list', $format = 'list', $multiple_errors = false) {
         if (!self::$instance) {
             self::$instance = new NibbleForm($action, $submit_value, $method, $sticky, $message_type, $format, $multiple_errors);
         }
         return self::$instance;
     }
 
-    public function __set($name, $value)
-    {
+    public function __set($name, $value) {
         $this->fields->$name = $value;
     }
 
-    public function __get($name)
-    {
+    public function __get($name) {
         return $this->fields->$name;
     }
 
-    public function checkField($field)
-    {
+    public function checkField($field) {
         return isset($this->fields->$field);
     }
 
-    public function addData($data)
-    {
+    public function addData($data) {
         $this->data = array_merge($this->data, $data);
     }
 
-    public function validate()
-    {
+    public function validate() {
         if ((isset($_SESSION['token']) && !in_array($_POST['token'], $_SESSION['token'])) || !isset($_SESSION['token']) || !isset($_POST['token'])) {
             $this->setMessages('CRSF token invalid', 'CRSF error');
             $this->valid = false;
@@ -159,8 +148,7 @@ class NibbleForm
         return $this->valid;
     }
 
-    private function setMessages($message, $title)
-    {
+    private function setMessages($message, $title) {
         $title = preg_replace('/_/', ' ', ucfirst($title));
         if ($this->message_type == 'flash') {
             $this->flash->message(ucfirst($message), $title, 0, true);
@@ -169,8 +157,7 @@ class NibbleForm
         }
     }
 
-    private function buildMessages()
-    {
+    private function buildMessages() {
         $messages = '<ul class="error">';
         foreach ($this->messages as $message_array) {
             $messages .= sprintf('<li>%s: %s</li>%s', ucfirst(preg_replace('/_/', ' ', $message_array['title'])), ucfirst($message_array['message']), "\n");
@@ -178,8 +165,7 @@ class NibbleForm
         $this->messages = $messages . '</ul>';
     }
 
-    public function render()
-    {
+    public function render() {
         if (!isset($_SESSION['token'])) {
             $_SESSION['token'] = array();
         }
@@ -191,18 +177,6 @@ class NibbleForm
         foreach ($this->fields as $key => $value) {
             $format = (object) $this->formats[$this->format];
             $temp = isset($this->data[$key]) ? $value->returnField($key, $this->data[$key]) : $value->returnField($key);
-            if ($temp['html']['close_field'] !== false) {
-                $format->close_field = $temp['html']['close_field'];
-            }
-            if ($temp['html']['close_html'] !== false) {
-                $format->close_html = $temp['html']['close_html'];
-            }
-            if ($temp['html']['open_field'] !== false) {
-                $format->open_field = $temp['html']['open_field'];
-            }
-            if ($temp['html']['open_html'] !== false) {
-                $format->open_html = $temp['html']['open_html'];
-            }
             $fields .= $format->open_field;
             if ($temp['label']) {
                 $fields .= $format->open_html . $temp['label'] . $format->close_html;
@@ -210,7 +184,7 @@ class NibbleForm
             if (isset($temp['messages'])) {
                 foreach ($temp['messages'] as $message) {
                     if ($this->message_type == 'inline') {
-                        $fields .= $format->open_html . '<p class="error">This field ' . $message . '</p>' . $format->close_html;
+                        $fields .= "$format->open_html <p class=\"error\">$message</p> $format->close_html";
                     } else {
                         $this->setMessages($message, $key);
                     }
@@ -246,18 +220,15 @@ class NibbleForm
 FORM;
     }
 
-    public function renderField($name)
-    {
+    public function renderField($name) {
         return $this->getFieldData($name, 'field');
     }
 
-    public function renderLabel($name)
-    {
+    public function renderLabel($name) {
         return $this->getFieldData($name, 'label');
     }
 
-    public function renderError($name)
-    {
+    public function renderError($name) {
         $errors = '';
         foreach ($this->getFieldData($name, 'messages') as $error) {
             $errors .= $error;
@@ -265,8 +236,7 @@ FORM;
         return $errors;
     }
 
-    private function getFieldData($name, $key)
-    {
+    private function getFieldData($name, $key) {
         $field = $this->$name;
         if (isset($this->data[$name])) {
             $field = $field->returnField($name, $this->data[$name]);
@@ -276,8 +246,7 @@ FORM;
         return $field[$key];
     }
 
-    public function openForm()
-    {
+    public function openForm() {
         $multipart = false;
         foreach ($this->fields as $field) {
             if (get_class($field) == 'File') {
@@ -286,37 +255,40 @@ FORM;
         }
         return "<form class=\"form\" action=\"$this->action\" method=\"$this->method\"" . ($multipart ? 'enctype="multipart/form-data"' : '') . ">";
     }
-    public function closeForm()
-    {
-        return "</form>"; 
+
+    public function closeForm() {
+        return "</form>";
     }
 
-    public function renderHidden()
-    {
-        $field = $this->$name;
-        if (isset($this->data[$name])) {
-            $field = $field->returnField($name, $this->data[$name]);
-        } else {
-            $field = $field->returnField($name);
+    public function renderHidden() {
+        $fields = array();
+        foreach ($this->fields as $name => $field) {
+            if (get_class($field) == 'Hidden') {
+                if (isset($this->data[$name])) {
+                    $fields_data = $field->returnField($name, $this->data[$name]);
+                } else {
+                    $fields_data = $field->returnField($name);
+                }
+                $fields[] = $field_data['field'];
+            }
         }
-        return $field['field'];
+
+        return implode("\n", $fields);
     }
 
-    public function renderErrors()
-    {
-        $field = $this->$name;
-        if (isset($this->data[$name])) {
-            $field = $field->returnField($name, $this->data[$name]);
-        } else {
-            $field = $field->returnField($name);
+    public function renderErrors() {
+        $errors = '';
+        foreach (array_keys($this->fields) as $name) {
+            foreach ($this->getFieldData($name, 'messages') as $error) {
+                $errors .= "<li>$error</li>\n";
+            }
         }
-        return $field['field'];
+        return "<ul>$errors</ul>";
     }
 
 }
 
-class Text extends FormField
-{
+class Text extends FormField {
 
     protected $label, $content;
     protected $attribute_string, $class = '';
@@ -324,8 +296,7 @@ class Text extends FormField
     public $error = array();
     public $field_type = 'text';
 
-    public function __construct($label, $attributes = array(), $content = '/.*/')
-    {
+    public function __construct($label, $attributes = array(), $content = '/.*/') {
         $this->label = $label;
         if (isset($attributes['required']))
             $this->required = $attributes['required'];
@@ -335,8 +306,7 @@ class Text extends FormField
         $this->content = $content;
     }
 
-    public function attributeString()
-    {
+    public function attributeString() {
         if (!empty($this->error))
             $this->class = 'error';
         $this->attribute_string = '';
@@ -348,8 +318,7 @@ class Text extends FormField
         }
     }
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $this->attributeString();
         return array(
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
@@ -359,8 +328,7 @@ class Text extends FormField
         );
     }
 
-    public function validate($val)
-    {
+    public function validate($val) {
         if ($this->required)
             if (Useful::stripper($val) === false)
                 $this->error[] = 'is required';
@@ -372,27 +340,22 @@ class Text extends FormField
 
 }
 
-class Hidden extends Text
-{
+class Hidden extends Text {
 
-    public function __construct($attributes = array(), $label = false, $content = '/.*/')
-    {
+    public function __construct($attributes = array(), $label = false, $content = '/.*/') {
         parent::__construct($label, $attributes, $content);
     }
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $this->field_type = 'hidden';
         return parent::returnField($name, $value);
     }
 
 }
 
-class Url extends Text
-{
+class Url extends Text {
 
-    public function validate($val)
-    {
+    public function validate($val) {
         if (!empty($this->error))
             return false;
         if (parent::validate($val))
@@ -403,19 +366,16 @@ class Url extends Text
         return !empty($this->error) ? false : true;
     }
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $this->field_type = 'url';
         return parent::returnField($name, $value);
     }
 
 }
 
-class Number extends Text
-{
+class Number extends Text {
 
-    public function validate($val)
-    {
+    public function validate($val) {
         if (!empty($this->error))
             return false;
         if (parent::validate($val))
@@ -426,21 +386,18 @@ class Number extends Text
         return !empty($this->error) ? false : true;
     }
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $this->field_type = 'number';
         return parent::returnField($name, $value);
     }
 
 }
 
-class Email extends Text
-{
+class Email extends Text {
 
     private $confirm = false;
 
-    public function validate($val)
-    {
+    public function validate($val) {
         if (!empty($this->error))
             return false;
         if (parent::validate($val))
@@ -457,8 +414,7 @@ class Email extends Text
         return !empty($this->error) ? false : true;
     }
 
-    public function addConfirmation($label, $open_field = false, $close_field = false, $open_html = false, $close_html = false)
-    {
+    public function addConfirmation($label, $open_field = false, $close_field = false, $open_html = false, $close_html = false) {
         $form = NibbleForm::getInstance();
         if ($form->checkField('confirm_email')) {
             $i = 2;
@@ -474,23 +430,20 @@ class Email extends Text
         }
     }
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $this->field_type = 'email';
         return parent::returnField($name, $value);
     }
 
 }
 
-class Password extends Text
-{
+class Password extends Text {
 
     private $confirm = false;
     private $min_length = false;
     private $alphanumeric = false;
 
-    public function __construct($label, $attributes = array(), $content = '/.*/')
-    {
+    public function __construct($label, $attributes = array(), $content = '/.*/') {
         parent::__construct($label, $attributes, $content);
         if (isset($attributes['alphanumeric']))
             $this->alphanumeric = $attributes['alphanumeric'];
@@ -498,8 +451,7 @@ class Password extends Text
             $this->min_length = $attributes['min_length'];
     }
 
-    public function validate($val)
-    {
+    public function validate($val) {
         if (!empty($this->error))
             return false;
         if (parent::validate($val)) {
@@ -519,14 +471,12 @@ class Password extends Text
         return !empty($this->error) ? false : true;
     }
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $this->field_type = 'password';
         return parent::returnField($name, $value);
     }
 
-    public function addConfirmation($label, $open_field = false, $close_field = false, $open_html = false, $close_html = false)
-    {
+    public function addConfirmation($label, $open_field = false, $close_field = false, $open_html = false, $close_html = false) {
         $form = NibbleForm::getInstance();
         if ($form->checkField('confirm_password')) {
             $i = 2;
@@ -544,11 +494,9 @@ class Password extends Text
 
 }
 
-class TextArea extends Text
-{
+class TextArea extends Text {
 
-    public function __construct($label, $attributes, $content = '/.*/')
-    {
+    public function __construct($label, $attributes, $content = '/.*/') {
         parent::__construct($label, $attributes, $content);
         if (!isset($attributes['rows']))
             $attributes['rows'] = 6;
@@ -556,8 +504,7 @@ class TextArea extends Text
             $attributes['cols'] = 60;
     }
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $this->attributeString();
         return array(
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
@@ -569,23 +516,20 @@ class TextArea extends Text
 
 }
 
-abstract class BaseOptions extends FormField
-{
+abstract class BaseOptions extends FormField {
 
     protected $label, $options;
     protected $required = true;
     public $error = array();
 
-    public function __construct($label, $options = array(), $attributes = array())
-    {
+    public function __construct($label, $options = array(), $attributes = array()) {
         $this->label = $label;
         $this->options = $options;
         if (isset($attributes['required']))
             $this->required = $attributes['required'];
     }
 
-    public function getAttributeString($val)
-    {
+    public function getAttributeString($val) {
         $attribute_string = '';
         if (is_array($val)) {
             $attributes = $val;
@@ -600,20 +544,17 @@ abstract class BaseOptions extends FormField
 
 }
 
-abstract class Options extends BaseOptions
-{
+abstract class Options extends BaseOptions {
 
     protected $false_values = false;
 
-    public function __construct($label, $options = array(), $attributes = array())
-    {
+    public function __construct($label, $options = array(), $attributes = array()) {
         parent::__construct($label, $options, $attributes);
         if (isset($attributes['false_values']))
             $this->false_values = $attributes['false_values'];
     }
 
-    public function validate($val)
-    {
+    public function validate($val) {
         if ($this->required)
             if (Useful::stripper($val) === false)
                 $this->error[] = 'is required';
@@ -624,17 +565,15 @@ abstract class Options extends BaseOptions
 
 }
 
-class Radio extends Options
-{
+class Radio extends Options {
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $field = '';
         foreach ($this->options as $key => $val) {
             $attributes = $this->getAttributeString($val);
             $field .= sprintf('<input type="radio" name="%1$s" id="%3$s" value="%2$s" %4$s/>' .
-                '<label for="%3$s">%5$s</label>'
-                , $name, $key, Useful::slugify($name) . '_' . Useful::slugify($key), ((string) $key === (string) $value ? 'checked="checked"' : '') . $attributes['string'], $attributes['val']);
+                    '<label for="%3$s">%5$s</label>'
+                    , $name, $key, Useful::slugify($name) . '_' . Useful::slugify($key), ((string) $key === (string) $value ? 'checked="checked"' : '') . $attributes['string'], $attributes['val']);
         }
         $class = !empty($this->error) ? ' class="error"' : '';
         return array(
@@ -647,19 +586,16 @@ class Radio extends Options
 
 }
 
-class Select extends Options
-{
+class Select extends Options {
 
     protected $show_size;
 
-    public function __construct($label, $options, $show_size = false, $required = true, $false_values = array())
-    {
+    public function __construct($label, $options, $show_size = false, $required = true, $false_values = array()) {
         parent::__construct($label, $options, $required, $false_values);
         $this->show_size = $show_size;
     }
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $field = sprintf('<select name="%1$s" id="%1$s" %2$s>', $name, ($this->show_size ? "size='$this->show_size'" : ''));
         foreach ($this->options as $key => $val) {
             $attributes = $this->getAttributeString($val);
@@ -677,20 +613,17 @@ class Select extends Options
 
 }
 
-abstract class MultipleOptions extends BaseOptions
-{
+abstract class MultipleOptions extends BaseOptions {
 
     protected $minimum_selected = false;
 
-    public function __construct($label, $options, $attributes = array())
-    {
+    public function __construct($label, $options, $attributes = array()) {
         parent::__construct($label, $options, $attributes);
         if (isset($attributes['minimum_selected']))
             $this->minimum_selected = $attributes['minimum_selected'];
     }
 
-    public function validate($val)
-    {
+    public function validate($val) {
         if (is_array($val)) {
             if ($this->minimum_selected && count($val) < $this->minimum_selected)
                 $this->error[] = sprintf('at least %s options must be selected', $this->minimum_selected);
@@ -701,17 +634,15 @@ abstract class MultipleOptions extends BaseOptions
 
 }
 
-class Checkbox extends MultipleOptions
-{
+class Checkbox extends MultipleOptions {
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $field = '';
         foreach ($this->options as $key => $val) {
             $attributes = $this->getAttributeString($val);
             $field .= sprintf('<input type="checkbox" name="%1$s[]" id="%3$s" value="%2$s" %4$s/>' .
-                '<label for=%3$s>%5$s</label>'
-                , $name, $key, Useful::slugify($name) . '_' . Useful::slugify($key), (is_array($value) && in_array((string) $key, $value) ? 'checked="checked"' : '') . $attributes['string'], $attributes['val']);
+                    '<label for=%3$s>%5$s</label>'
+                    , $name, $key, Useful::slugify($name) . '_' . Useful::slugify($key), (is_array($value) && in_array((string) $key, $value) ? 'checked="checked"' : '') . $attributes['string'], $attributes['val']);
         }
         $class = !empty($this->error) ? ' class="error"' : '';
         return array(
@@ -724,20 +655,17 @@ class Checkbox extends MultipleOptions
 
 }
 
-class MultipleSelect extends MultipleOptions
-{
+class MultipleSelect extends MultipleOptions {
 
     protected $show_size = false;
 
-    public function __construct($label, $options, $attributes = array())
-    {
+    public function __construct($label, $options, $attributes = array()) {
         parent::__construct($label, $options, $attributes);
         if (isset($attributes['show_size']))
             $this->show_size = $attributes['show_size'];
     }
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $field = sprintf('<select name="%1$s[]" id="%1$s" %2$s multiple="multiple">', $name, ($this->show_size ? "size='$this->show_size'" : ''));
         foreach ($this->options as $key => $val) {
             $attributes = $this->getAttributeString($val);
@@ -755,8 +683,7 @@ class MultipleSelect extends MultipleOptions
 
 }
 
-class File extends FormField
-{
+class File extends FormField {
 
     private $label;
     private $type;
@@ -799,8 +726,7 @@ class File extends FormField
         'custom' => 'is invalid'
     );
 
-    public function __construct($label, $type = 'all', $required = true, $max_size = 2097152, $width = 1600, $height = 1600, $min_width = 0, $min_height = 0)
-    {
+    public function __construct($label, $type = 'all', $required = true, $max_size = 2097152, $width = 1600, $height = 1600, $min_width = 0, $min_height = 0) {
         $this->label = $label;
         $this->required = $required;
         $this->max_size = $max_size;
@@ -827,8 +753,7 @@ class File extends FormField
         }
     }
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $class = !empty($this->error) ? ' class="error"' : '';
         return array(
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
@@ -838,8 +763,7 @@ class File extends FormField
         );
     }
 
-    public function validate($val)
-    {
+    public function validate($val) {
         if ($this->required)
             if ($val['error'] != 0 || $val['size'] == 0)
                 $this->error[] = 'is required';
@@ -862,19 +786,16 @@ class File extends FormField
 
 }
 
-class Captcha extends FormField
-{
+class Captcha extends FormField {
 
     public $error = array();
     protected $label;
 
-    public function __construct($label = 'Humanity Check')
-    {
+    public function __construct($label = 'Humanity Check') {
         $this->label = $label;
     }
 
-    public function returnField($name, $value = '')
-    {
+    public function returnField($name, $value = '') {
         $field = <<<FIELD
   <script type="text/javascript"
      src="http://www.google.com/recaptcha/api/challenge?k=%1\$s">
@@ -897,8 +818,7 @@ FIELD;
         );
     }
 
-    public function validate($val)
-    {
+    public function validate($val) {
 
         $url = 'http://www.google.com/recaptcha/api/verify';
         $data = array(
@@ -943,23 +863,19 @@ FIELD;
 
 }
 
-class Useful
-{
+class Useful {
 
-    public static function stripper($val)
-    {
+    public static function stripper($val) {
         foreach (array(' ', '&nbsp;', '\n', '\t', '\r') as $strip)
             $val = str_replace($strip, '', (string) $val);
         return $val === '' ? false : $val;
     }
 
-    public static function slugify($text)
-    {
+    public static function slugify($text) {
         return strtolower(trim(preg_replace('/\W+/', '-', $text), '-'));
     }
 
-    public static function randomString($length = 10, $return = '')
-    {
+    public static function randomString($length = 10, $return = '') {
         $string = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890';
         while ($length-- > 0)
             $return .= $string[mt_rand(0, strlen($string) - 1)];

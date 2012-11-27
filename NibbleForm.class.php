@@ -24,8 +24,7 @@
  */
 namespace NibbleForms;
 
-class NibbleForm
-{
+class NibbleForm {
 
     private $action, $method, $submit_value, $fields, $sticky, $format, $message_type, $flash, $multiple_errors;
     private $valid = true;
@@ -69,14 +68,26 @@ class NibbleForm
         $this->format = $format;
         $this->message_type = $message_type;
         $this->multiple_errors = $multiple_errors;
-        if ($message_type == 'flash')
+        if ($message_type == 'flash') {
             $this->flash = Flash::getInstance();
-        if ($message_type == 'list')
+        }
+        if ($message_type == 'list') {
             $this->messages = array();
+        }
     }
 
-    public static function getInstance($action = '/', $submit_value = 'Submit', $method = 'post', $sticky = true, $message_type = 'list', $format = 'list', $multiple_errors = false)
-    {
+    /**
+     * 
+     * @param string $action
+     * @param string $submit_value
+     * @param string $method
+     * @param boolean $sticky
+     * @param string $message_type
+     * @param string $format
+     * @param string $multiple_errors
+     * @return \Nibble\NibbleForm
+     */
+    public static function getInstance($action = '/', $submit_value = 'Submit', $method = 'post', $sticky = true, $message_type = 'list', $format = 'list', $multiple_errors = false) {
         if (!self::$instance) {
             self::$instance = new NibbleForm($action, $submit_value, $method, $sticky, $message_type, $format, $multiple_errors);
         }
@@ -97,23 +108,19 @@ class NibbleForm
         $this->fields->$name = $value;
     }
 
-    public function __get($name)
-    {
+    public function __get($name) {
         return $this->fields->$name;
     }
 
-    public function checkField($field)
-    {
+    public function checkField($field) {
         return isset($this->fields->$field);
     }
 
-    public function addData($data)
-    {
+    public function addData($data) {
         $this->data = array_merge($this->data, $data);
     }
 
-    public function validate()
-    {
+    public function validate() {
         if ((isset($_SESSION['token']) && !in_array($_POST['token'], $_SESSION['token'])) || !isset($_SESSION['token']) || !isset($_POST['token'])) {
             $this->setMessages('CRSF token invalid', 'CRSF error');
             $this->valid = false;
@@ -130,8 +137,7 @@ class NibbleForm
         return $this->valid;
     }
 
-    private function setMessages($message, $title)
-    {
+    private function setMessages($message, $title) {
         $title = preg_replace('/_/', ' ', ucfirst($title));
         if ($this->message_type == 'flash') {
             $this->flash->message(ucfirst($message), $title, 0, true);
@@ -140,8 +146,7 @@ class NibbleForm
         }
     }
 
-    private function buildMessages()
-    {
+    private function buildMessages() {
         $messages = '<ul class="error">';
         foreach ($this->messages as $message_array) {
             $messages .= sprintf('<li>%s: %s</li>%s', ucfirst(preg_replace('/_/', ' ', $message_array['title'])), ucfirst($message_array['message']), "\n");
@@ -149,8 +154,7 @@ class NibbleForm
         $this->messages = $messages . '</ul>';
     }
 
-    public function render()
-    {
+    public function render() {
         if (!isset($_SESSION['token'])) {
             $_SESSION['token'] = array();
         }
@@ -162,18 +166,6 @@ class NibbleForm
         foreach ($this->fields as $key => $value) {
             $format = (object) $this->formats[$this->format];
             $temp = isset($this->data[$key]) ? $value->returnField($key, $this->data[$key]) : $value->returnField($key);
-            if ($temp['html']['close_field'] !== false) {
-                $format->close_field = $temp['html']['close_field'];
-            }
-            if ($temp['html']['close_html'] !== false) {
-                $format->close_html = $temp['html']['close_html'];
-            }
-            if ($temp['html']['open_field'] !== false) {
-                $format->open_field = $temp['html']['open_field'];
-            }
-            if ($temp['html']['open_html'] !== false) {
-                $format->open_html = $temp['html']['open_html'];
-            }
             $fields .= $format->open_field;
             if ($temp['label']) {
                 $fields .= $format->open_html . $temp['label'] . $format->close_html;
@@ -181,7 +173,7 @@ class NibbleForm
             if (isset($temp['messages'])) {
                 foreach ($temp['messages'] as $message) {
                     if ($this->message_type == 'inline') {
-                        $fields .= $format->open_html . '<p class="error">This field ' . $message . '</p>' . $format->close_html;
+                        $fields .= "$format->open_html <p class=\"error\">$message</p> $format->close_html";
                     } else {
                         $this->setMessages($message, $key);
                     }
@@ -217,18 +209,15 @@ class NibbleForm
 FORM;
     }
 
-    public function renderField($name)
-    {
+    public function renderField($name) {
         return $this->getFieldData($name, 'field');
     }
 
-    public function renderLabel($name)
-    {
+    public function renderLabel($name) {
         return $this->getFieldData($name, 'label');
     }
 
-    public function renderError($name)
-    {
+    public function renderError($name) {
         $errors = '';
         foreach ($this->getFieldData($name, 'messages') as $error) {
             $errors .= $error;
@@ -236,8 +225,7 @@ FORM;
         return $errors;
     }
 
-    private function getFieldData($name, $key)
-    {
+    private function getFieldData($name, $key) {
         $field = $this->$name;
         if (isset($this->data[$name])) {
             $field = $field->returnField($name, $this->data[$name]);
@@ -247,8 +235,7 @@ FORM;
         return $field[$key];
     }
 
-    public function openForm()
-    {
+    public function openForm() {
         $multipart = false;
         foreach ($this->fields as $field) {
             if (get_class($field) == 'File') {
@@ -257,53 +244,53 @@ FORM;
         }
         return "<form class=\"form\" action=\"$this->action\" method=\"$this->method\"" . ($multipart ? 'enctype="multipart/form-data"' : '') . ">";
     }
-    public function closeForm()
-    {
-        return "</form>"; 
+
+    public function closeForm() {
+        return "</form>";
     }
 
-    public function renderHidden()
-    {
-        $field = $this->$name;
-        if (isset($this->data[$name])) {
-            $field = $field->returnField($name, $this->data[$name]);
-        } else {
-            $field = $field->returnField($name);
+    public function renderHidden() {
+        $fields = array();
+        foreach ($this->fields as $name => $field) {
+            if (get_class($field) == 'Hidden') {
+                if (isset($this->data[$name])) {
+                    $fields_data = $field->returnField($name, $this->data[$name]);
+                } else {
+                    $fields_data = $field->returnField($name);
+                }
+                $fields[] = $field_data['field'];
+            }
         }
-        return $field['field'];
+
+        return implode("\n", $fields);
     }
 
-    public function renderErrors()
-    {
-        $field = $this->$name;
-        if (isset($this->data[$name])) {
-            $field = $field->returnField($name, $this->data[$name]);
-        } else {
-            $field = $field->returnField($name);
+    public function renderErrors() {
+        $errors = '';
+        foreach (array_keys($this->fields) as $name) {
+            foreach ($this->getFieldData($name, 'messages') as $error) {
+                $errors .= "<li>$error</li>\n";
+            }
         }
-        return $field['field'];
+        return "<ul>$errors</ul>";
     }
 
 }
 spl_autoload_register(__NAMESPACE__ ."\NibbleForm::nibbleLoader");
 
-class Useful
-{
+class Useful {
 
-    public static function stripper($val)
-    {
+    public static function stripper($val) {
         foreach (array(' ', '&nbsp;', '\n', '\t', '\r') as $strip)
             $val = str_replace($strip, '', (string) $val);
         return $val === '' ? false : $val;
     }
 
-    public static function slugify($text)
-    {
+    public static function slugify($text) {
         return strtolower(trim(preg_replace('/\W+/', '-', $text), '-'));
     }
 
-    public static function randomString($length = 10, $return = '')
-    {
+    public static function randomString($length = 10, $return = '') {
         $string = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890';
         while ($length-- > 0)
             $return .= $string[mt_rand(0, strlen($string) - 1)];

@@ -1,22 +1,23 @@
 <?php
 namespace NibbleForms\Field;
 
-abstract class BaseOptions extends FormField
+abstract class BaseOptions extends FormField 
 {
 
     protected $label, $options;
     protected $required = true;
     public $error = array();
 
-    public function __construct($label, $options = array(), $attributes = array())
+    public function __construct($label, $options = array(), $attributes = array()) 
     {
         $this->label = $label;
         $this->options = $options;
-        if (isset($attributes['required']))
+        if (isset($attributes['required'])){
             $this->required = $attributes['required'];
+        }
     }
 
-    public function getAttributeString($val)
+    public function getAttributeString($val) 
     {
         $attribute_string = '';
         if (is_array($val)) {

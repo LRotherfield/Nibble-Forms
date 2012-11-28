@@ -1,18 +1,17 @@
 <?php
 namespace NibbleForms\Field;
 
-class Select extends Options
-{
+class Select extends Options {
 
     protected $show_size;
 
-    public function __construct($label, $options, $show_size = false, $required = true, $false_values = array())
+    public function __construct($label, $options, $show_size = false, $required = true, $false_values = array()) 
     {
         parent::__construct($label, $options, $required, $false_values);
         $this->show_size = $show_size;
     }
 
-    public function returnField($name, $value = '')
+    public function returnField($name, $value = '') 
     {
         $field = sprintf('<select name="%1$s" id="%1$s" %2$s>', $name, ($this->show_size ? "size='$this->show_size'" : ''));
         foreach ($this->options as $key => $val) {

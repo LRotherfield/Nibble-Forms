@@ -1,31 +1,31 @@
 <?php
 namespace NibbleForms\Field;
 
-class Captcha extends FormField
+class Captcha extends FormField 
 {
 
     public $error = array();
     protected $label;
 
-    public function __construct($label = 'Humanity Check')
+    public function __construct($label = 'Humanity Check') 
     {
         $this->label = $label;
     }
 
-    public function returnField($name, $value = '')
+    public function returnField($name, $value = '') 
     {
         $field = <<<FIELD
-  <script type="text/javascript"
-     src="http://www.google.com/recaptcha/api/challenge?k=%1\$s">
-  </script>
-  <noscript>
-     <iframe src="http://www.google.com/recaptcha/api/noscript?k=%1\$s"
-         height="300" width="500" frameborder="0"></iframe><br>
-     <textarea name="recaptcha_challenge_field" rows="3" cols="40">
-     </textarea>
-     <input type="hidden" name="recaptcha_response_field"
-         value="manual_challenge">
-  </noscript>
+<script type="text/javascript"
+ src="http://www.google.com/recaptcha/api/challenge?k=%1\$s">
+</script>
+<noscript>
+ <iframe src="http://www.google.com/recaptcha/api/noscript?k=%1\$s"
+     height="300" width="500" frameborder="0"></iframe><br>
+ <textarea name="recaptcha_challenge_field" rows="3" cols="40">
+ </textarea>
+ <input type="hidden" name="recaptcha_response_field"
+     value="manual_challenge">
+</noscript>
 FIELD;
         $class = !empty($this->error) ? ' class="error"' : '';
         return array(
@@ -36,7 +36,7 @@ FIELD;
         );
     }
 
-    public function validate($val)
+    public function validate($val) 
     {
 
         $url = 'http://www.google.com/recaptcha/api/verify';
@@ -69,13 +69,15 @@ FIELD;
 
         fwrite($fs, $http_request);
 
-        while (!feof($fs))
+        while (!feof($fs)){
             $response .= fgets($fs, 1160); // One TCP-IP packet
+        }
         fclose($fs);
         $response = explode("\r\n\r\n", $response);
         $response = explode("\n", $response[1]);
-        if (!isset($response[0]) || $response[0] != 'true')
+        if (!isset($response[0]) || $response[0] != 'true'){
             $this->error[] = 'You failed to prove you humanity';
+        }
         //curl_close($ch);
         return empty($this->error) ? true : false;
     }

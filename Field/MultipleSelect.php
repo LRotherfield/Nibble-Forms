@@ -1,19 +1,19 @@
 <?php
 namespace NibbleForms\Field;
 
-class MultipleSelect extends MultipleOptions
+class MultipleSelect extends MultipleOptions 
 {
 
     protected $show_size = false;
 
-    public function __construct($label, $options, $attributes = array())
+    public function __construct($label, $options, $attributes = array()) 
     {
         parent::__construct($label, $options, $attributes);
         if (isset($attributes['show_size']))
             $this->show_size = $attributes['show_size'];
     }
 
-    public function returnField($name, $value = '')
+    public function returnField($name, $value = '') 
     {
         $field = sprintf('<select name="%1$s[]" id="%1$s" %2$s multiple="multiple">', $name, ($this->show_size ? "size='$this->show_size'" : ''));
         foreach ($this->options as $key => $val) {

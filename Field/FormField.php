@@ -7,7 +7,8 @@ abstract class FormField
     public $custom_error = array();
     public $html = array(
         'open_field' => false,
-        'close_field' => false,        'open_html' => false,
+        'close_field' => false,        
+        'open_html' => false,
         'close_html' => false
     );
 

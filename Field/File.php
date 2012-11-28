@@ -1,7 +1,7 @@
 <?php 
 namespace NibbleForms\Field;
 
-class File extends FormField
+class File extends FormField 
 {
 
     private $label;
@@ -45,7 +45,7 @@ class File extends FormField
         'custom' => 'is invalid'
     );
 
-    public function __construct($label, $type = 'all', $required = true, $max_size = 2097152, $width = 1600, $height = 1600, $min_width = 0, $min_height = 0)
+    public function __construct($label, $type = 'all', $required = true, $max_size = 2097152, $width = 1600, $height = 1600, $min_width = 0, $min_height = 0) 
     {
         $this->label = $label;
         $this->required = $required;
@@ -59,9 +59,9 @@ class File extends FormField
             $this->type = 'custom';
         } else {
             $this->type = $type;
-            if (isset($this->mime_types[$type]))
+            if (isset($this->mime_types[$type])){
                 $this->mime_types = $this->mime_types[$type];
-            else {
+            } else {
                 $temp = array();
                 foreach ($this->mime_types as $mime_array)
                     foreach ($mime_array as $mime_type)
@@ -73,7 +73,7 @@ class File extends FormField
         }
     }
 
-    public function returnField($name, $value = '')
+    public function returnField($name, $value = '') 
     {
         $class = !empty($this->error) ? ' class="error"' : '';
         return array(
@@ -84,24 +84,31 @@ class File extends FormField
         );
     }
 
-    public function validate($val)
+    public function validate($val) 
     {
-        if ($this->required)
-            if ($val['error'] != 0 || $val['size'] == 0)
+        if ($this->required){
+            if ($val['error'] != 0 || $val['size'] == 0){
                 $this->error[] = 'is required';
+            }
+        }
         if ($val['error'] == 0) {
-            if ($val['size'] > $this->max_size)
+            if ($val['size'] > $this->max_size){
                 $this->error[] = sprintf('must be less than %sMb', $this->max_size / 1024 / 1024);
+            }
             if ($this->type == 'image') {
                 $image = getimagesize($val['tmp_name']);
-                if ($image[0] > $this->width || $image[1] > $this->height)
+                if ($image[0] > $this->width || $image[1] > $this->height){
                     $this->error[] = sprintf('must contain an image no more than %s pixels wide and %s pixels high', $this->width, $this->height);
-                if ($image[0] < $this->min_width || $image[1] < $this->min_height)
+                }
+                if ($image[0] < $this->min_width || $image[1] < $this->min_height){
                     $this->error[] = sprintf('must contain an image at least %s pixels wide and %s pixels high', $this->min_width, $this->min_height);
-                if (!in_array($image['mime'], $this->mime_types))
+                }
+                if (!in_array($image['mime'], $this->mime_types)){
                     $this->error[] = $this->error_types[$this->type];
-            } elseif (!in_array($val['type'], $this->mime_types))
+                }
+            } elseif (!in_array($val['type'], $this->mime_types)){
                 $this->error[] = $this->error_types[$this->type];
+            }
         }
         return !empty($this->error) ? false : true;
     }

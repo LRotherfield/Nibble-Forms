@@ -7,6 +7,9 @@ session_set_cookie_params(30 * 60);
 session_start();
 include dirname(__FILE__) . '/NibbleForm.class.php';
 $form = \NibbleForms\NibbleForm::getInstance('', 'Submit this form', 'post', true, 'list');
+$form->addField('text field', 'text', array(
+            'class' => 'testy classes',
+            'max_length' => 20));
 $form->id = new \NibbleForms\Field\Hidden(array('class'=>'example class'));
 $form->number = new \NibbleForms\Field\Number('Numeric please',array('class'=>'example class'));
 $form->username = new \NibbleForms\Field\Text('Please enter your username', array(

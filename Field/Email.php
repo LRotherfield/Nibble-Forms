@@ -29,7 +29,7 @@ class Email extends Text
 
     public function addConfirmation($label, $open_field = false, $close_field = false, $open_html = false, $close_html = false) 
     {
-        $form = NibbleForm::getInstance();
+        $form = \NibbleForms\NibbleForm::getInstance();
         if ($form->checkField('confirm_email')) {
             $i = 2;
             while ($form->checkField('confirm_email_' . $i)){

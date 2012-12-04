@@ -116,6 +116,18 @@ class NibbleForm
     {
         return $this->fields->$name;
     }
+    
+    /**
+     * @TODO create a new field depending on the data sent to this method, include ability to add confirmation in seperate function
+     * @param type $label
+     * @param type $name
+     * @param type $attributes
+     */
+    public function addField($label, $name, $attributes)
+    {
+        echo $name;
+        print_r($attributes);
+    }
 
     public function checkField($field)
     {
@@ -129,6 +141,9 @@ class NibbleForm
 
     public function validate()
     {
+        /**
+         * @TODO use post or get depending on method
+         */
         if ((isset($_SESSION['token']) && !in_array($_POST['token'], $_SESSION['token'])) || !isset($_SESSION['token']) || !isset($_POST['token'])) {
             $this->setMessages('CRSF token invalid', 'CRSF error');
             $this->valid = false;
@@ -166,6 +181,9 @@ class NibbleForm
 
     public function render()
     {
+        /**
+         * @TODO sort out token session to only have 1 show lifetime
+         */
         if (!isset($_SESSION['token'])) {
             $_SESSION['token'] = array();
         }

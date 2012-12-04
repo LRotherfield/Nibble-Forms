@@ -36,7 +36,7 @@ class Password extends Text
         }
         if ($this->confirm) {
             if ($val != $_POST[$this->confirm]) {
-                $form = NibbleForm::getInstance();
+                $form = \NibbleForms\NibbleForm::getInstance();
                 $form->{$this->confirm}->error[] = 'must match password';
             }
         }
@@ -50,7 +50,7 @@ class Password extends Text
     }
 
     public function addConfirmation($label, $attributes = array()) {
-        $form = NibbleForm::getInstance();
+        $form = \NibbleForms\NibbleForm::getInstance();
         if ($form->checkField('confirm_password')) {
             $i = 2;
             while ($form->checkField('confirm_password_' . $i))

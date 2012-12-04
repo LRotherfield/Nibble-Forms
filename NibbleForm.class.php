@@ -22,9 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 namespace NibbleForms;
 
-class NibbleForm {
+class NibbleForm
+{
 
     private $action, $method, $submit_value, $fields, $sticky, $format, $message_type, $flash, $multiple_errors, $html5;
     private $valid = true;
@@ -88,7 +90,7 @@ class NibbleForm {
      * @param string $multiple_errors
      * @return \Nibble\NibbleForm
      */
-    public static function getInstance($action = '/', $submit_value = 'Submit', $html5 = true, $method = 'post', $sticky = true, $message_type = 'list', $format = 'list', $multiple_errors = false) 
+    public static function getInstance($action = '/', $submit_value = 'Submit', $html5 = true, $method = 'post', $sticky = true, $message_type = 'list', $format = 'list', $multiple_errors = false)
     {
         if (!self::$instance) {
             self::$instance = new NibbleForm($action, $submit_value, $html5, $method, $sticky, $message_type, $format, $multiple_errors);
@@ -98,11 +100,11 @@ class NibbleForm {
 
     public static function nibbleLoader($class)
     {
-        $namespace = explode('\\',$class);
-        if($namespace[0] == "NibbleForms"){
+        $namespace = explode('\\', $class);
+        if ($namespace[0] == "NibbleForms") {
             array_shift($namespace);
         }
-        require dirname(__FILE__).'/'.implode('/', $namespace).'.php';
+        require dirname(__FILE__) . '/' . implode('/', $namespace) . '.php';
     }
 
     public function __set($name, $value)
@@ -110,19 +112,23 @@ class NibbleForm {
         $this->fields->$name = $value;
     }
 
-    public function __get($name) {
+    public function __get($name)
+    {
         return $this->fields->$name;
     }
 
-    public function checkField($field) {
+    public function checkField($field)
+    {
         return isset($this->fields->$field);
     }
 
-    public function addData($data) {
+    public function addData($data)
+    {
         $this->data = array_merge($this->data, $data);
     }
 
-    public function validate() {
+    public function validate()
+    {
         if ((isset($_SESSION['token']) && !in_array($_POST['token'], $_SESSION['token'])) || !isset($_SESSION['token']) || !isset($_POST['token'])) {
             $this->setMessages('CRSF token invalid', 'CRSF error');
             $this->valid = false;
@@ -139,7 +145,8 @@ class NibbleForm {
         return $this->valid;
     }
 
-    private function setMessages($message, $title) {
+    private function setMessages($message, $title)
+    {
         $title = preg_replace('/_/', ' ', ucfirst($title));
         if ($this->message_type == 'flash') {
             $this->flash->message(ucfirst($message), $title, 0, true);
@@ -148,7 +155,8 @@ class NibbleForm {
         }
     }
 
-    private function buildMessages() {
+    private function buildMessages()
+    {
         $messages = '<ul class="error">';
         foreach ($this->messages as $message_array) {
             $messages .= sprintf('<li>%s: %s</li>%s', ucfirst(preg_replace('/_/', ' ', $message_array['title'])), ucfirst($message_array['message']), "\n");
@@ -156,7 +164,8 @@ class NibbleForm {
         $this->messages = $messages . '</ul>';
     }
 
-    public function render() {
+    public function render()
+    {
         if (!isset($_SESSION['token'])) {
             $_SESSION['token'] = array();
         }
@@ -211,30 +220,35 @@ class NibbleForm {
 FORM;
     }
 
-    public function renderField($name) {
+    public function renderField($name)
+    {
         return $this->getFieldData($name, 'field');
     }
 
-    public function renderLabel($name) {
+    public function renderLabel($name)
+    {
         return $this->getFieldData($name, 'label');
     }
 
-    public function renderError($name) {
+    public function renderError($name)
+    {
         $errors = '';
         foreach ($this->getFieldData($name, 'messages') as $error) {
             $errors .= $error;
         }
         return $errors;
     }
-    
-    public function renderRow($name){
+
+    public function renderRow($name)
+    {
         $row_string = $this->renderError($name);
         $row_string .= $this->renderLabel($name);
         $row_string .= $this->renderField($name);
         return $row_string;
     }
 
-    private function getFieldData($name, $key) {
+    private function getFieldData($name, $key)
+    {
         $field = $this->$name;
         if (isset($this->data[$name])) {
             $field = $field->returnField($name, $this->data[$name]);
@@ -244,7 +258,8 @@ FORM;
         return $field[$key];
     }
 
-    public function openForm() {
+    public function openForm()
+    {
         $multipart = false;
         foreach ($this->fields as $field) {
             if (get_class($field) == 'File') {
@@ -254,11 +269,13 @@ FORM;
         return "<form class=\"form\" action=\"$this->action\" method=\"$this->method\"" . ($multipart ? 'enctype="multipart/form-data"' : '') . ">";
     }
 
-    public function closeForm() {
+    public function closeForm()
+    {
         return "</form>";
     }
 
-    public function renderHidden() {
+    public function renderHidden()
+    {
         $fields = array();
         foreach ($this->fields as $name => $field) {
             if (get_class($field) == 'Hidden') {
@@ -274,7 +291,8 @@ FORM;
         return implode("\n", $fields);
     }
 
-    public function renderErrors() {
+    public function renderErrors()
+    {
         $errors = '';
         foreach (array_keys($this->fields) as $name) {
             foreach ($this->getFieldData($name, 'messages') as $error) {
@@ -286,21 +304,25 @@ FORM;
 
 }
 
-spl_autoload_register(__NAMESPACE__ ."\NibbleForm::nibbleLoader");
+spl_autoload_register(__NAMESPACE__ . "\NibbleForm::nibbleLoader");
 
-class Useful {
+class Useful
+{
 
-    public static function stripper($val) {
+    public static function stripper($val)
+    {
         foreach (array(' ', '&nbsp;', '\n', '\t', '\r') as $strip)
             $val = str_replace($strip, '', (string) $val);
         return $val === '' ? false : $val;
     }
 
-    public static function slugify($text) {
+    public static function slugify($text)
+    {
         return strtolower(trim(preg_replace('/\W+/', '-', $text), '-'));
     }
 
-    public static function randomString($length = 10, $return = '') {
+    public static function randomString($length = 10, $return = '')
+    {
         $string = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890';
         while ($length-- > 0)
             $return .= $string[mt_rand(0, strlen($string) - 1)];

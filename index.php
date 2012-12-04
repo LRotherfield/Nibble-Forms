@@ -6,14 +6,14 @@ ini_set('session.gc_maxlifetime', 30 * 60);
 session_set_cookie_params(30 * 60);
 session_start();
 include dirname(__FILE__) . '/NibbleForm.class.php';
-$form = NibbleForm::getInstance('', 'Submit this form', 'post', true, 'list');
-$form->id = new Hidden(array('class'=>'example class'));
-$form->number = new Number('Numeric please',array('class'=>'example class'));
-$form->username = new Text('Please enter your username', array(
+$form = \NibbleForms\NibbleForm::getInstance('', 'Submit this form', 'post', true, 'list');
+$form->id = new \NibbleForms\Field\Hidden(array('class'=>'example class'));
+$form->number = new \NibbleForms\Field\Number('Numeric please',array('class'=>'example class'));
+$form->username = new \NibbleForms\Field\Text('Please enter your username', array(
             'class' => 'testy classes',
             'max_length' => 20), '/[a-zA-Z0-9]+/');
-$form->email = new Email('Please enter your email', array('required' => false));
-$form->file = new File('Image');
+$form->email = new \NibbleForms\Field\Email('Please enter your email', array('required' => false));
+$form->file = new \NibbleForms\Field\File('Image');
 $form->email->addConfirmation('Please confirm your email');
 if (isset($_POST['submit'])) {
   if ($form->validate()) {
@@ -22,7 +22,7 @@ if (isset($_POST['submit'])) {
     echo 'Invalid';
   }
 }
-$form->checkers = new MultipleSelect('check boxes dude', array(array('data-luke'=>'2five','Luke'),'Ben'), array('data-price'=>100));
+$form->checkers = new \NibbleForms\Field\MultipleSelect('check boxes dude', array(array('data-luke'=>'2five','Luke'),'Ben'), array('data-price'=>100));
 ?>
 <!doctype html>
 <html>

@@ -48,7 +48,7 @@ abstract class FormField {
 
 class NibbleForm {
 
-    private $action, $method, $submit_value, $fields, $sticky, $format, $message_type, $flash, $multiple_errors;
+    private $action, $method, $submit_value, $fields, $sticky, $format, $message_type, $flash, $multiple_errors, $html5;
     private $valid = true;
     private $messages = '';
     private $data = array();
@@ -80,10 +80,11 @@ class NibbleForm {
     );
     public static $instance;
 
-    public function __construct($action, $submit_value, $method, $sticky, $message_type, $format, $multiple_errors) {
+    public function __construct($action, $submit_value, $html5, $method, $sticky, $message_type, $format, $multiple_errors) {
         $this->fields = new stdClass();
         $this->action = $action;
         $this->method = $method;
+        $this->html5 = $html5;
         $this->submit_value = $submit_value;
         $this->sticky = $sticky;
         $this->format = $format;
@@ -108,9 +109,9 @@ class NibbleForm {
      * @param string $multiple_errors
      * @return \Nibble\NibbleForm
      */
-    public static function getInstance($action = '/', $submit_value = 'Submit', $method = 'post', $sticky = true, $message_type = 'list', $format = 'list', $multiple_errors = false) {
+    public static function getInstance($action = '/', $submit_value = 'Submit', $html5 = true, $method = 'post', $sticky = true, $message_type = 'list', $format = 'list', $multiple_errors = false) {
         if (!self::$instance) {
-            self::$instance = new NibbleForm($action, $submit_value, $method, $sticky, $message_type, $format, $multiple_errors);
+            self::$instance = new NibbleForm($action, $submit_value, $html5, $method, $sticky, $message_type, $format, $multiple_errors);
         }
         return self::$instance;
     }
@@ -235,6 +236,13 @@ FORM;
         }
         return $errors;
     }
+    
+    public function renderRow($name){
+        $row_string = $this->renderError($name);
+        $row_string .= $this->renderLabel($name);
+        $row_string .= $this->renderField($name);
+        return $row_string;
+    }
 
     private function getFieldData($name, $key) {
         $field = $this->$name;
@@ -324,7 +332,6 @@ class Text extends FormField {
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
             'label' => $this->label === false ? false : sprintf('<label for="%s" class="%s">%s</label>', $name, $this->class, $this->label),
             'field' => sprintf('<input type="%1$s" name="%2$s" id="%2$s" value="%3$s" %4$s class="%5$s" />', $this->field_type, $name, $value, $this->attribute_string, $this->class),
-            'html' => $this->html
         );
     }
 
@@ -414,18 +421,16 @@ class Email extends Text {
         return !empty($this->error) ? false : true;
     }
 
-    public function addConfirmation($label, $open_field = false, $close_field = false, $open_html = false, $close_html = false) {
+    public function addConfirmation($label, $attributes = array()) {
         $form = NibbleForm::getInstance();
         if ($form->checkField('confirm_email')) {
             $i = 2;
             while ($form->checkField('confirm_email_' . $i))
                 $i++;
-            $form->{'confirm_email_' . $i} = new Email($label, $this->attributes, $this->content);
-            $form->{'confirm_email_' . $i}->customHtml($open_field, $close_field, $open_html, $close_html);
+            $form->{'confirm_email_' . $i} = new Email($label, $this->attributes + $attributes, $this->content);
             $this->confirm = 'confirm_email_' . $i;
         } else {
-            $form->confirm_email = new Email($label, $this->attributes, $this->content);
-            $form->confirm_email->customHtml($open_field, $close_field, $open_html, $close_html);
+            $form->confirm_email = new Email($label, $this->attributes + $attributes, $this->content);
             $this->confirm = 'confirm_email';
         }
     }
@@ -476,18 +481,16 @@ class Password extends Text {
         return parent::returnField($name, $value);
     }
 
-    public function addConfirmation($label, $open_field = false, $close_field = false, $open_html = false, $close_html = false) {
+    public function addConfirmation($label, $attributes = array()) {
         $form = NibbleForm::getInstance();
         if ($form->checkField('confirm_password')) {
             $i = 2;
             while ($form->checkField('confirm_password_' . $i))
                 $i++;
-            $form->{'confirm_password_' . $i} = new Password($label, $this->attributes, $this->content);
-            $form->{'confirm_password_' . $i}->customHtml($open_field, $close_field, $open_html, $close_html);
+            $form->{'confirm_password_' . $i} = new Password($label, $this->attributes + $attributes, $this->content);
             $this->confirm = 'confirm_password_' . $i;
         } else {
-            $form->confirm_password = new Password($label, $this->attributes, $this->content);
-            $form->confirm_password->customHtml($open_field, $close_field, $open_html, $close_html);
+            $form->confirm_password = new Password($label, $this->attributes + $attributes, $this->content);
             $this->confirm = 'confirm_password';
         }
     }
@@ -510,7 +513,6 @@ class TextArea extends Text {
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
             'label' => $this->label == false ? false : sprintf('<label for="%s" class="%s">%s</label>', $name, $this->class, $this->label),
             'field' => sprintf('<textarea name="%1$s" id="%1$s" class="%2$s" %4$s>%3$s</textarea>', $name, $this->class, $value, $this->attribute_string),
-            'html' => $this->html
         );
     }
 
@@ -580,7 +582,6 @@ class Radio extends Options {
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
             'label' => $this->label == false ? false : sprintf('<p%s>%s</p>', $class, $this->label),
             'field' => $field,
-            'html' => $this->html
         );
     }
 
@@ -607,7 +608,6 @@ class Select extends Options {
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
             'label' => $this->label == false ? false : sprintf('<label for="%s"%s>%s</label>', $name, $class, $this->label),
             'field' => $field,
-            'html' => $this->html
         );
     }
 
@@ -649,7 +649,6 @@ class Checkbox extends MultipleOptions {
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
             'label' => $this->label == false ? false : sprintf('<p%s>%s</p>', $class, $this->label),
             'field' => $field,
-            'html' => $this->html
         );
     }
 
@@ -677,7 +676,6 @@ class MultipleSelect extends MultipleOptions {
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
             'label' => $this->label == false ? false : sprintf('<label for="%s"%s>%s</label>', $name, $class, $this->label),
             'field' => $field,
-            'html' => $this->html
         );
     }
 
@@ -759,7 +757,6 @@ class File extends FormField {
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
             'label' => $this->label == false ? false : sprintf('<label for="%s"%s>%s</label>', $name, $class, $this->label),
             'field' => sprintf('<input type="file" name="%1$s" id="%1$s"/>', $name),
-            'html' => $this->html
         );
     }
 
@@ -814,7 +811,6 @@ FIELD;
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
             'label' => $this->label == false ? false : sprintf('<label for="%s"%s>%s</label>', $name, $class, $this->label),
             'field' => sprintf($field, 'YOUR_PUBLIC_KEY'),
-            'html' => $this->html
         );
     }
 

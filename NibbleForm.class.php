@@ -114,7 +114,10 @@ class NibbleForm
 
     public function __get($name)
     {
+        if(isset($this->fields->$name)){
         return $this->fields->$name;
+        }
+        return false;
     }
     
     /**
@@ -123,10 +126,15 @@ class NibbleForm
      * @param type $name
      * @param type $attributes
      */
-    public function addField($label, $name, $attributes)
+    public function addField($label, $name, $attributes, $overwrite = false)
     {
-        echo $name;
-        print_r($attributes);
+        $namespace = "\\NibbleForms\\Field\\".ucfirst($name);
+        $field_name = Useful::slugify($label, '_');
+        if($this->$field_name && !$overwrite){
+            return false;
+        }
+        $this->$field_name = new $namespace($label, $attributes);
+        return $this->$field_name;
     }
 
     public function checkField($field)
@@ -334,9 +342,9 @@ class Useful
         return $val === '' ? false : $val;
     }
 
-    public static function slugify($text)
+    public static function slugify($text, $replacement = '-')
     {
-        return strtolower(trim(preg_replace('/\W+/', '-', $text), '-'));
+        return strtolower(trim(preg_replace('/\W+/', $replacement, $text), '-'));
     }
 
     public static function randomString($length = 10, $return = '')

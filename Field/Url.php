@@ -10,7 +10,7 @@ class Url extends Text
             return false;
         }
         if (parent::validate($val)){
-            if (Useful::stripper($val) !== false) {
+            if (\NibbleForms\Useful::stripper($val) !== false) {
                 if (!filter_var($val, FILTER_VALIDATE_URL)){
                     $this->error[] = 'must be a valid URL';
                 }

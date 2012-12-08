@@ -1,45 +1,48 @@
 <?php
+
 namespace NibbleForms\Field;
 
-class Text extends FormField 
+class Text extends FormField
 {
 
-    protected $label, $content;
-    protected $attribute_string, $class = '';
-    protected $required = true;
-    public $error = array();
-    public $field_type = 'text';
+    protected $label,
+            $content = '/.*/',
+            $attribute_string = '',
+            $class = '',
+            $required = true;
+    public $error = array(),
+            $field_type = 'text';
 
-    public function __construct($label, $attributes = array(), $content = '/.*/') 
+    public function __construct($label, $attributes = array())
     {
         $this->label = $label;
-        if (isset($attributes['required'])){
+        if (isset($attributes['required'])) {
             $this->required = $attributes['required'];
-        }
-        else{
+        } else {
             $attributes['required'] = true;
         }
+        if (isset($attributes['content'])) {
+            $this->content = $attributes['content'];
+        }
         $this->attributes = $attributes;
-        $this->content = $content;
     }
 
-    public function attributeString() 
+    public function attributeString()
     {
-        if (!empty($this->error)){
+        if (!empty($this->error)) {
             $this->class = 'error';
         }
         $this->attribute_string = '';
         foreach ($this->attributes as $attribute => $val) {
-            if ($attribute == 'class'){
+            if ($attribute == 'class') {
                 $this->class.= ' ' . $val;
-            }
-            else{
+            } else {
                 $this->attribute_string .= $val ? ' ' . ($val === true ? $attribute : "$attribute=\"$val\"") : '';
             }
         }
     }
 
-    public function returnField($name, $value = '') 
+    public function returnField($name, $value = '')
     {
         $this->attributeString();
         return array(
@@ -50,15 +53,15 @@ class Text extends FormField
         );
     }
 
-    public function validate($val) 
+    public function validate($val)
     {
-        if ($this->required){
-            if (Useful::stripper($val) === false){
+        if ($this->required) {
+            if (\NibbleForms\Useful::stripper($val) === false) {
                 $this->error[] = 'is required';
             }
         }
-        if (Useful::stripper($val) !== false){
-            if (!preg_match($this->content, $val)){
+        if (\NibbleForms\Useful::stripper($val) !== false) {
+            if (!preg_match($this->content, $val)) {
                 $this->error[] = 'is not valid';
             }
         }

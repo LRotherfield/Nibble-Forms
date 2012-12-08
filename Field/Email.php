@@ -12,7 +12,7 @@ class Email extends Text
             return false;
         }
         if (parent::validate($val)){
-            if (Useful::stripper($val) !== false) {
+            if (\NibbleForms\Useful::stripper($val) !== false) {
                 if (!filter_var($val, FILTER_VALIDATE_EMAIL)){
                     $this->error[] = 'must be a valid email address';
                 }
@@ -20,7 +20,7 @@ class Email extends Text
         }
         if ($this->confirm) {
             if ($val != $_POST[$this->confirm]) {
-                $form = NibbleForm::getInstance();
+                $form = \NibbleForms\NibbleForm::getInstance();
                 $form->{$this->confirm}->error[] = 'must match email';
             }
         }

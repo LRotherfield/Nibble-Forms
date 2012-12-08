@@ -4,9 +4,9 @@ namespace NibbleForms\Field;
 class TextArea extends Text 
 {
 
-    public function __construct($label, $attributes, $content = '/.*/') 
+    public function __construct($label, $attributes) 
     {
-        parent::__construct($label, $attributes, $content);
+        parent::__construct($label, $attributes);
         if (!isset($attributes['rows'])){
             $attributes['rows'] = 6;
         }

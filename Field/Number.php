@@ -10,7 +10,7 @@ class Number extends Text
             return false;
         }
         if (parent::validate($val))
-            if (Useful::stripper($val) !== false) {
+            if (\NibbleForms\Useful::stripper($val) !== false) {
                 if (!filter_var($val, FILTER_VALIDATE_FLOAT)){
                     $this->error[] = 'must be numeric';
                 }

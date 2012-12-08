@@ -17,7 +17,7 @@ abstract class Options extends BaseOptions
     public function validate($val) 
     {
         if ($this->required){
-            if (Useful::stripper($val) === false){
+            if (\NibbleForms\Useful::stripper($val) === false){
                 $this->error[] = 'is required';
             }
         }

@@ -114,23 +114,28 @@ class NibbleForm
 
     public function __get($name)
     {
-        if(isset($this->fields->$name)){
-        return $this->fields->$name;
+        if (isset($this->fields->$name)) {
+            return $this->fields->$name;
         }
         return false;
     }
-    
+
     /**
      * @TODO create a new field depending on the data sent to this method, include ability to add confirmation in seperate function
      * @param type $label
      * @param type $name
      * @param type $attributes
      */
-    public function addField($label, $name, $attributes, $overwrite = false)
+    public function addField($field_name, $name, $attributes, $overwrite = false)
     {
-        $namespace = "\\NibbleForms\\Field\\".ucfirst($name);
-        $field_name = Useful::slugify($label, '_');
-        if($this->$field_name && !$overwrite){
+        $namespace = "\\NibbleForms\\Field\\" . ucfirst($name);
+        if (isset($attributes['label'])) {
+            $label = $attributes['label'];
+        } else {
+            $label = $field_name;
+        }
+        $field_name = Useful::slugify($field_name, '_');
+        if ($this->$field_name && !$overwrite) {
             return false;
         }
         $this->$field_name = new $namespace($label, $attributes);
@@ -149,23 +154,27 @@ class NibbleForm
 
     public function validate()
     {
-        /**
-         * @TODO use post or get depending on method
-         */
-        if ((isset($_SESSION['token']) && !in_array($_POST['token'], $_SESSION['token'])) || !isset($_SESSION['token']) || !isset($_POST['token'])) {
+        if(strtolower($this->method) == 'get'){
+            $form_data = $_GET;
+        } else {
+            $form_data = $_POST;
+        }
+        if ((isset($_SESSION['token']) && !in_array($form_data['token'], $_SESSION['token'])) || !isset($_SESSION['token']) || !isset($form_data['token'])) {
             $this->setMessages('CRSF token invalid', 'CRSF error');
             $this->valid = false;
+            return false;
         }
         $_SESSION['token'] = array();
         if ($this->sticky) {
-            $this->addData($_POST);
+            $this->addData($form_data);
         }
         foreach ($this->fields as $key => $value) {
-            if (!$value->validate((isset($_POST[$key]) ? $_POST[$key] : (isset($_FILES[$key]) ? $_FILES[$key] : '')))) {
+            if (!$value->validate((isset($form_data[$key]) ? $form_data[$key] : (isset($_FILES[$key]) ? $_FILES[$key] : '')))) {
                 $this->valid = false;
+                return false;
             }
         }
-        return $this->valid;
+        return true;
     }
 
     private function setMessages($message, $title)
@@ -189,13 +198,11 @@ class NibbleForm
 
     public function render()
     {
-        /**
-         * @TODO sort out token session to only have 1 show lifetime
-         */
+
         if (!isset($_SESSION['token'])) {
             $_SESSION['token'] = array();
         }
-        $_SESSION['token'][] = \NibbleForms\Useful::randomString(20);
+        $_SESSION['token'][$this->action] = \NibbleForms\Useful::randomString(20);
         $fields = '';
         $error = $this->valid ? '' : '<p class="error">Sorry there were some errors in the form, problem fields have been highlighted</p>';
         $format = (object) $this->formats[$this->format];

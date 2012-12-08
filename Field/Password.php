@@ -8,9 +8,9 @@ class Password extends Text
     private $min_length = false;
     private $alphanumeric = false;
 
-    public function __construct($label, $attributes = array(), $content = '/.*/') 
+    public function __construct($label, $attributes = array()) 
     {
-        parent::__construct($label, $attributes, $content);
+        parent::__construct($label, $attributes);
         if (isset($attributes['alphanumeric'])){
             $this->alphanumeric = $attributes['alphanumeric'];
         }
@@ -25,7 +25,7 @@ class Password extends Text
             return false;
         }
         if (parent::validate($val)) {
-            if (Useful::stripper($val) !== false) {
+            if (\NibbleForms\Useful::stripper($val) !== false) {
                 if ($this->min_length && strlen($val) < $this->min_length){
                     $this->error[] = sprintf('must be more than %s characters', $this->min_length);
                 }

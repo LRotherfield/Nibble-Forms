@@ -43,10 +43,10 @@ class Password extends Text
         return !empty($this->error) ? false : true;
     }
 
-    public function returnField($name, $value = '') 
+    public function returnField($form_name, $name, $value = '') 
     {
         $this->field_type = 'password';
-        return parent::returnField($name, $value);
+        return parent::returnField($form_name, $name, $value);
     }
 
     public function addConfirmation($label, $attributes = array()) {

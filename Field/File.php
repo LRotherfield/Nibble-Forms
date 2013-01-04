@@ -73,13 +73,13 @@ class File extends FormField
         }
     }
 
-    public function returnField($name, $value = '') 
+    public function returnField($form_name, $name, $value = '') 
     {
         $class = !empty($this->error) ? ' class="error"' : '';
         return array(
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
-            'label' => $this->label == false ? false : sprintf('<label for="%s"%s>%s</label>', $name, $class, $this->label),
-            'field' => sprintf('<input type="file" name="%1$s" id="%1$s"/>', $name),
+            'label' => $this->label == false ? false : sprintf('<label for="%s_%s"%s>%s</label>', $form_name, $name, $class, $this->label),
+            'field' => sprintf('<input type="file" name="%2$s[%1$s]" id="%2$s_%1$s"/>', $name, $form_name),
             'html' => $this->html
         );
     }

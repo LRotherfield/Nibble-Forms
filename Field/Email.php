@@ -45,10 +45,10 @@ class Email extends Text
         }
     }
 
-    public function returnField($name, $value = '') 
+    public function returnField($form_name, $name, $value = '') 
     {
         $this->field_type = 'email';
-        return parent::returnField($name, $value);
+        return parent::returnField($form_name, $name, $value);
     }
 
 }

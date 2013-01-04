@@ -9,10 +9,10 @@ class Hidden extends Text
         parent::__construct($label, $attributes, $content);
     }
 
-    public function returnField($name, $value = '') 
+    public function returnField($form_name, $name, $value = '') 
     {
         $this->field_type = 'hidden';
-        return parent::returnField($name, $value);
+        return parent::returnField($form_name, $name, $value);
     }
 
 }

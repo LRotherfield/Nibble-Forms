@@ -42,13 +42,13 @@ class Text extends FormField
         }
     }
 
-    public function returnField($name, $value = '')
+    public function returnField($form_name, $name, $value = '')
     {
         $this->attributeString();
         return array(
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
-            'label' => $this->label === false ? false : sprintf('<label for="%s" class="%s">%s</label>', $name, $this->class, $this->label),
-            'field' => sprintf('<input type="%1$s" name="%2$s" id="%2$s" value="%3$s" %4$s class="%5$s" />', $this->field_type, $name, $value, $this->attribute_string, $this->class),
+            'label' => $this->label === false ? false : sprintf('<label for="%s_%s" class="%s">%s</label>', $form_name, $name, $this->class, $this->label),
+            'field' => sprintf('<input type="%1$s" name="%6$s[%2$s]" id="%6$s_%2$s" value="%3$s" %4$s class="%5$s" />', $this->field_type, $name, $value, $this->attribute_string, $this->class, $form_name),
             'html' => $this->html
         );
     }

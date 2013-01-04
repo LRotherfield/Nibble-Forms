@@ -15,7 +15,7 @@ abstract class FormField
     /**
      * Return the current field, i.e label and input
      */
-    abstract public function returnField($name, $value = '');
+    abstract public function returnField($form_name, $name, $value = '');
 
     /**
      * Validate the current field

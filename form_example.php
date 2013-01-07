@@ -14,12 +14,14 @@ $email = $form->addfield('email', 'email', array(
 $email->addConfirmation('confirm_email', array(
     'label' => 'Please confirm your email'
 ));
-$form->addField('example_select', 'select', array(
-    array('data-luke' => '2five', 'Luke'),
-    'Ben'
+$form->addField('example_select', 'multipleSelect', array(
+    'choices' => array(
+        "luke" => array('data-luke' => '2five', 'Luke'),
+        "ben" => "Ben"),
+    'false_values' => array("ben")
 ));
 
-if($form->validate()){
+if ($form->validate()) {
     echo "good";
 } else {
     echo "bad";

@@ -3,11 +3,9 @@ namespace NibbleForms\Field;
 
 class Select extends Options {
 
-    protected $show_size = false;
-
-    public function __construct($label, array $choices = array(), array $attributes = array()) 
+    public function __construct($label, array $attributes = array()) 
     {
-        parent::__construct($label, $choices, $attributes);
+        parent::__construct($label, $attributes);
     }
 
     public function returnField($form_name, $name, $value = '') 

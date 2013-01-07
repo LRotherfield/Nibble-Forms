@@ -6,23 +6,18 @@ abstract class Options extends BaseOptions
 
     protected $false_values = array();
 
-    public function __construct($label, $options = array(), $attributes = array()) 
+    public function __construct($label, $attributes = array()) 
     {
-        parent::__construct($label, $options, $attributes);
-        if (isset($attributes['false_values'])){
-            $this->false_values = $attributes['false_values'];
-        }
+        parent::__construct($label, $attributes);
     }
 
     public function validate($val) 
     {
+        parent::validate($val);
         if ($this->required){
             if (\NibbleForms\Useful::stripper($val) === false){
                 $this->error[] = 'is required';
             }
-        }
-        if (in_array($val, $this->false_values)){
-            $this->error[] = 'is not a valid selection';
         }
         return !empty($this->error) ? false : true;
     }

@@ -33,46 +33,56 @@ class NibbleForm
     protected $name = 'nibble_form';
     protected $messages = array();
     protected $data = array();
-    protected $formats = array(
-        'list' => array(
-            'open_form' => '<ul>',
-            'close_form' => '</ul>',
-            'open_form_body' => '',
-            'close_form_body' => '',
-            'open_field' => '',
-            'close_field' => '',
-            'open_html' => "<li>\n",
-            'close_html' => "</li>\n",
-            'open_submit' => "<li>\n",
-            'close_submit' => "</li>\n"
-        ),
-        'table' => array(
-            'open_form' => '<table>',
-            'close_form' => '</table>',
-            'open_form_body' => '<tbody>',
-            'close_form_body' => '</tbody>',
-            'open_field' => "<tr>\n",
-            'close_field' => "</tr>\n",
-            'open_html' => "<td>\n",
-            'close_html' => "</td>\n",
-            'open_submit' => '<tfoot><tr><td>',
-            'close_submit' => '</td></tr></tfoot>'
-        )
-    );
+    protected $formats
+        = array(
+            'list'  => array(
+                'open_form'       => '<ul>',
+                'close_form'      => '</ul>',
+                'open_form_body'  => '',
+                'close_form_body' => '',
+                'open_field'      => '',
+                'close_field'     => '',
+                'open_html'       => "<li>\n",
+                'close_html'      => "</li>\n",
+                'open_submit'     => "<li>\n",
+                'close_submit'    => "</li>\n"
+            ),
+            'table' => array(
+                'open_form'       => '<table>',
+                'close_form'      => '</table>',
+                'open_form_body'  => '<tbody>',
+                'close_form_body' => '</tbody>',
+                'open_field'      => "<tr>\n",
+                'close_field'     => "</tr>\n",
+                'open_html'       => "<td>\n",
+                'close_html'      => "</td>\n",
+                'open_submit'     => '<tfoot><tr><td>',
+                'close_submit'    => '</td></tr></tfoot>'
+            )
+        );
     protected static $instance;
 
     /**
-     * @param string $action
-     * @param string $submit_value
-     * @param string $method
+     * @param string  $action
+     * @param string  $submit_value
+     * @param string  $method
      * @param boolean $sticky
-     * @param string $message_type
-     * @param string $format
-     * @param string $multiple_errors
-     * @return \Nibble\NibbleForm
+     * @param string  $message_type
+     * @param string  $format
+     * @param string  $multiple_errors
+     *
+     * @return NibbleForm
      */
-    public function __construct($action, $submit_value, $html5, $method, $sticky, $message_type, $format, $multiple_errors)
-    {
+    public function __construct(
+        $action,
+        $submit_value,
+        $html5,
+        $method,
+        $sticky,
+        $message_type,
+        $format,
+        $multiple_errors
+    ) {
         $this->fields = new \stdClass();
         $this->action = $action;
         $this->method = $method;
@@ -86,25 +96,38 @@ class NibbleForm
 
     /**
      * Singleton method
-     * @param string $action
-     * @param string $method
+     *
+     * @param string  $action
+     * @param string  $method
      * @param boolean $sticky
-     * @param string $submit_value
-     * @param string $message_type
-     * @param string $format
-     * @param string $multiple_errors
-     * @return \Nibble\NibbleForm
+     * @param string  $submit_value
+     * @param string  $message_type
+     * @param string  $format
+     * @param string  $multiple_errors
+     *
+     * @return NibbleForm
      */
-    public static function getInstance($action = '/', $html5 = true, $method = 'post', $submit_value = 'Submit', $sticky = true, $message_type = 'list', $format = 'list', $multiple_errors = false)
-    {
+    public static function getInstance(
+        $action = '/',
+        $html5 = true,
+        $method = 'post',
+        $submit_value = 'Submit',
+        $sticky = true,
+        $message_type = 'list',
+        $format = 'list',
+        $multiple_errors = false
+    ) {
         if (!self::$instance) {
-            self::$instance = new NibbleForm($action, $submit_value, $html5, $method, $sticky, $message_type, $format, $multiple_errors);
+            self::$instance
+                = new NibbleForm($action, $submit_value, $html5, $method, $sticky, $message_type, $format, $multiple_errors);
         }
+
         return self::$instance;
     }
 
     /**
      * Autoloader for nibble forms
+     *
      * @param string $class
      */
     public static function nibbleLoader($class)
@@ -118,10 +141,12 @@ class NibbleForm
 
     /**
      * Add a field to the form instance
-     * @param string $field_name
-     * @param string $type
-     * @param array $attributes
+     *
+     * @param string  $field_name
+     * @param string  $type
+     * @param array   $attributes
      * @param boolean $overwrite
+     *
      * @return boolean
      */
     public function addField($field_name, $type = 'text', array $attributes = array(), $overwrite = false)
@@ -137,11 +162,13 @@ class NibbleForm
             return false;
         }
         $this->fields->$field_name = new $namespace($label, $attributes);
+
         return $this->fields->$field_name;
     }
 
     /**
      * Set the name of the form
+     *
      * @param string $name
      */
     public function setName($name)
@@ -151,6 +178,7 @@ class NibbleForm
 
     /**
      * Get form name
+     *
      * @return string
      */
     public function getName()
@@ -160,6 +188,7 @@ class NibbleForm
 
     /**
      * Get form method
+     *
      * @return string
      */
     public function getMethod()
@@ -169,6 +198,7 @@ class NibbleForm
 
     /**
      * Add data to populate the form
+     *
      * @param array $data
      */
     public function addData(array $data)
@@ -178,6 +208,7 @@ class NibbleForm
 
     /**
      * Validate the submitted form
+     *
      * @return boolean
      */
     public function validate()
@@ -187,9 +218,14 @@ class NibbleForm
             $form_data = $request[$this->name];
         } else {
             $this->valid = false;
+
             return false;
         }
-        if ((isset($_SESSION["nibble_forms"]["_crsf_token"], $_SESSION["nibble_forms"]["_crsf_token"][$this->name]) && $form_data["_crsf_token"] !== $_SESSION["nibble_forms"]["_crsf_token"][$this->name]) || !isset($_SESSION["nibble_forms"]["_crsf_token"]) || !isset($form_data["_crsf_token"])) {
+        if ((isset($_SESSION["nibble_forms"]["_crsf_token"], $_SESSION["nibble_forms"]["_crsf_token"][$this->name])
+            && $form_data["_crsf_token"] !== $_SESSION["nibble_forms"]["_crsf_token"][$this->name])
+            || !isset($_SESSION["nibble_forms"]["_crsf_token"])
+            || !isset($form_data["_crsf_token"])
+        ) {
             $this->setMessages('CRSF token invalid', 'CRSF error');
             $this->valid = false;
         }
@@ -198,28 +234,37 @@ class NibbleForm
             $this->addData($form_data);
         }
         foreach ($this->fields as $key => $value) {
-            if (!$value->validate((isset($form_data[$key]) ? $form_data[$key] : (isset($_FILES[$this->name][$key]) ? $_FILES[$this->name][$key] : '')))) {
+            if (!$value->validate(
+                (isset($form_data[$key])
+                    ? $form_data[$key] : (isset($_FILES[$this->name][$key]) ? $_FILES[$this->name][$key] : ''))
+            )
+            ) {
                 $this->valid = false;
+
                 return false;
             }
         }
+
         return $this->valid;
     }
 
     /**
      * Render the entire form including submit button, errors, form tags etc
+     *
      * @return string
      */
     public function render()
     {
         $fields = '';
-        $error = $this->valid ? '' : '<p class="error">Sorry there were some errors in the form, problem fields have been highlighted</p>';
-        $format = (object) $this->formats[$this->format];
+        $error = $this->valid ? ''
+            : '<p class="error">Sorry there were some errors in the form, problem fields have been highlighted</p>';
+        $format = (object)$this->formats[$this->format];
         $this->setToken();
 
         foreach ($this->fields as $key => $value) {
-            $format = (object) $this->formats[$this->format];
-            $temp = isset($this->data[$key]) ? $value->returnField($this->name, $key, $this->data[$key]) : $value->returnField($this->name, $key);
+            $format = (object)$this->formats[$this->format];
+            $temp = isset($this->data[$key]) ? $value->returnField($this->name, $key, $this->data[$key])
+                : $value->returnField($this->name, $key);
             $fields .= $format->open_field;
             if ($temp['label']) {
                 $fields .= $format->open_html . $temp['label'] . $format->close_html;
@@ -246,6 +291,7 @@ class NibbleForm
         }
         self::$instance = false;
         $attributes = $this->getFormAttributes();
+
         return <<<FORM
             $error
             $this->messages
@@ -264,7 +310,9 @@ FORM;
 
     /**
      * Returns the HTML for a specific form field ususally in the form of input tags
+     *
      * @param string $name
+     *
      * @return string
      */
     public function renderField($name)
@@ -274,7 +322,9 @@ FORM;
 
     /**
      * Returns the HTML for a specific form field's label
+     *
      * @param string $name
+     *
      * @return string
      */
     public function renderLabel($name)
@@ -284,7 +334,9 @@ FORM;
 
     /**
      * Returns the error string for a specific form field
+     *
      * @param string $name
+     *
      * @return string
      */
     public function renderError($name)
@@ -296,12 +348,15 @@ FORM;
         foreach ($this->getFieldData($name, 'messages') as $error) {
             $error_string .= "<li>$error</li>";
         }
+
         return $error_string === '' ? false : "<ul>$error_string</ul>";
     }
 
     /**
      * Returns the entire HTML structure for a form field
+     *
      * @param string $name
+     *
      * @return string
      */
     public function renderRow($name)
@@ -309,11 +364,13 @@ FORM;
         $row_string = $this->renderError($name);
         $row_string .= $this->renderLabel($name);
         $row_string .= $this->renderField($name);
+
         return $row_string;
     }
 
     /**
      * Returns HTML for all hidden fields including crsf protection
+     *
      * @return string
      */
     public function renderHidden()
@@ -336,6 +393,7 @@ FORM;
 
     /**
      * Returns HTML string for all errors in the form
+     *
      * @return string
      */
     public function renderErrors()
@@ -346,21 +404,25 @@ FORM;
                 $error_string .= "<li>$error</li>\n";
             }
         }
+
         return $error_string === '' ? false : "<ul>$error_string</ul>";
     }
 
     /**
      * Returns the HTML string for opening a form with the correct enctype, action and method
+     *
      * @return string
      */
     public function openForm()
     {
         $attributes = $this->getFormAttributes();
+
         return "<form class=\"form\" action=\"$this->action\" method=\"$this->method\" {$attributes['enctype']} {$attributes['html5']}>";
     }
 
     /**
      * Return close form tag
+     *
      * @return string
      */
     public function closeForm()
@@ -370,7 +432,9 @@ FORM;
 
     /**
      * Check if a field exists
+     *
      * @param string $field
+     *
      * @return boolean
      */
     public function checkField($field)
@@ -380,6 +444,7 @@ FORM;
 
     /**
      * Get the attributes for the form tag
+     *
      * @return array
      */
     private function getFormAttributes()
@@ -391,14 +456,16 @@ FORM;
             }
         }
         $html5 = $this->html5 ? '' : 'novalidate';
+
         return array(
             'enctype' => $enctype,
-            'html5' => $html5
+            'html5'   => $html5
         );
     }
 
     /**
      * Adds a message string to the class messages array or as a flash message
+     *
      * @param string $message
      * @param string $title
      */
@@ -419,15 +486,22 @@ FORM;
     {
         $messages = '<ul class="error">';
         foreach ($this->messages as $message_array) {
-            $messages .= sprintf('<li>%s: %s</li>%s', ucfirst(preg_replace('/_/', ' ', $message_array['title'])), ucfirst($message_array['message']), "\n");
+            $messages .= sprintf(
+                '<li>%s: %s</li>%s',
+                ucfirst(preg_replace('/_/', ' ', $message_array['title'])),
+                ucfirst($message_array['message']),
+                "\n"
+            );
         }
         $this->messages = $messages . '</ul>';
     }
 
     /**
      * Gets a specific field HTML string from the field class
+     *
      * @param string $name
      * @param string $key
+     *
      * @return string
      */
     private function getFieldData($name, $key)
@@ -441,16 +515,18 @@ FORM;
         } else {
             $field = $field->returnField($this->name, $name);
         }
+
         return $field[$key];
     }
 
     /**
      * Creates a new CRSF token
+     *
      * @return string
      */
     private function setToken()
     {
-        if(!isset($_SESSION["nibble_forms"])){
+        if (!isset($_SESSION["nibble_forms"])) {
             $_SESSION["nibble_forms"] = array();
         }
         if (!isset($_SESSION["nibble_forms"]["_crsf_token"])) {
@@ -470,20 +546,27 @@ class Useful
 
     /**
      * Strip out all empty characters from a string
+     *
      * @param string $val
+     *
      * @return string
      */
     public static function stripper($val)
     {
         foreach (array(' ', '&nbsp;', '\n', '\t', '\r') as $strip)
-            $val = str_replace($strip, '', (string) $val);
+                {
+                    $val = str_replace($strip, '', (string)$val);
+                }
+
         return $val === '' ? false : $val;
     }
 
     /**
      * Slugify a string using a specified replacement for empty characters
+     *
      * @param string $text
      * @param string $replacement
+     *
      * @return string
      */
     public static function slugify($text, $replacement = '-')
@@ -493,8 +576,10 @@ class Useful
 
     /**
      * Return a random string of specified length
-     * @param int $length
+     *
+     * @param int    $length
      * @param string $return
+     *
      * @return string
      */
     public static function randomString($length = 10, $return = '')
@@ -502,6 +587,7 @@ class Useful
         $string = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890';
         while ($length-- > 0)
             $return .= $string[mt_rand(0, strlen($string) - 1)];
+
         return $return;
     }
 

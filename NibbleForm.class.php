@@ -31,7 +31,7 @@ class NibbleForm
     protected $action, $method, $submit_value, $fields, $sticky, $format, $message_type, $flash, $multiple_errors, $html5;
     protected $valid = true;
     protected $name = 'nibble_form';
-    protected $messages = '';
+    protected $messages = array();
     protected $data = array();
     protected $formats = array(
         'list' => array(
@@ -82,12 +82,6 @@ class NibbleForm
         $this->format = $format;
         $this->message_type = $message_type;
         $this->multiple_errors = $multiple_errors;
-        if ($message_type == 'flash') {
-            $this->flash = Flash::getInstance();
-        }
-        if ($message_type == 'list') {
-            $this->messages = array();
-        }
     }
 
     /**
@@ -136,10 +130,10 @@ class NibbleForm
         if (isset($attributes['label'])) {
             $label = $attributes['label'];
         } else {
-            $label = $field_name;
+            $label = ucfirst(str_replace('_', ' ', $field_name));
         }
         $field_name = Useful::slugify($field_name, '_');
-        if ($this->fields->$field_name && !$overwrite) {
+        if (isset($this->fields->$field_name) && !$overwrite) {
             return false;
         }
         $this->fields->$field_name = new $namespace($label, $attributes);
@@ -153,6 +147,24 @@ class NibbleForm
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * Get form name
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get form method
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->method;
     }
 
     /**
@@ -170,17 +182,18 @@ class NibbleForm
      */
     public function validate()
     {
-        if (strtolower($this->method) == 'get') {
-            $form_data = $_GET[$this->name];
+        $request = strtoupper($this->method) == 'POST' ? $_POST : $_GET;
+        if (isset($request[$this->name])) {
+            $form_data = $request[$this->name];
         } else {
-            $form_data = $_POST[$this->name];
-        }
-        if ((isset($_SESSION['token']) && $form_data['token'] !== $_SESSION['token'][$this->name]) || !isset($_SESSION['token']) || !isset($form_data['token'])) {
-            $this->setMessages('CRSF token invalid', 'CRSF error');
             $this->valid = false;
             return false;
         }
-        $_SESSION['token'] = array();
+        if ((isset($_SESSION["nibble_forms"]["_crsf_token"], $_SESSION["nibble_forms"]["_crsf_token"][$this->name]) && $form_data["_crsf_token"] !== $_SESSION["nibble_forms"]["_crsf_token"][$this->name]) || !isset($_SESSION["nibble_forms"]["_crsf_token"]) || !isset($form_data["_crsf_token"])) {
+            $this->setMessages('CRSF token invalid', 'CRSF error');
+            $this->valid = false;
+        }
+        $_SESSION["nibble_forms"]["_crsf_token"] = array();
         if ($this->sticky) {
             $this->addData($form_data);
         }
@@ -190,7 +203,7 @@ class NibbleForm
                 return false;
             }
         }
-        return true;
+        return $this->valid;
     }
 
     /**
@@ -202,10 +215,11 @@ class NibbleForm
         $fields = '';
         $error = $this->valid ? '' : '<p class="error">Sorry there were some errors in the form, problem fields have been highlighted</p>';
         $format = (object) $this->formats[$this->format];
+        $this->setToken();
 
         foreach ($this->fields as $key => $value) {
             $format = (object) $this->formats[$this->format];
-            $temp = isset($this->data[$key]) ? $value->returnField($key, $this->data[$key]) : $value->returnField($key);
+            $temp = isset($this->data[$key]) ? $value->returnField($this->name, $key, $this->data[$key]) : $value->returnField($this->name, $key);
             $fields .= $format->open_field;
             if ($temp['label']) {
                 $fields .= $format->open_html . $temp['label'] . $format->close_html;
@@ -231,13 +245,13 @@ class NibbleForm
             $this->messages = false;
         }
         self::$instance = false;
+        $attributes = $this->getFormAttributes();
         return <<<FORM
             $error
             $this->messages
-            <form class="form" action="$this->action" method="$this->method" enctype="multipart/form-data">
+            <form class="form" action="$this->action" method="$this->method" {$attributes['enctype']} {$attributes['html5']}>
               $format->open_form
                 $format->open_form_body
-                  {$this->setToken()}
                   $fields
                 $format->close_form_body
                 $format->open_submit
@@ -276,6 +290,9 @@ FORM;
     public function renderError($name)
     {
         $error_string = '';
+        if (!is_array($this->getFieldData($name, 'messages'))) {
+            return false;
+        }
         foreach ($this->getFieldData($name, 'messages') as $error) {
             $error_string .= "<li>$error</li>";
         }
@@ -301,13 +318,14 @@ FORM;
      */
     public function renderHidden()
     {
-        $fields = array($this->setToken());
+        $this->setToken();
+        $fields = array();
         foreach ($this->fields as $name => $field) {
-            if (get_class($field) == 'Hidden') {
+            if (get_class($field) == 'NibbleForms\\Field\\Hidden') {
                 if (isset($this->data[$name])) {
-                    $fields_data = $field->returnField($this->name, $name, $this->data[$name]);
+                    $field_data = $field->returnField($this->name, $name, $this->data[$name]);
                 } else {
-                    $fields_data = $field->returnField($this->name, $name);
+                    $field_data = $field->returnField($this->name, $name);
                 }
                 $fields[] = $field_data['field'];
             }
@@ -337,13 +355,8 @@ FORM;
      */
     public function openForm()
     {
-        $multipart = false;
-        foreach ($this->fields as $field) {
-            if (get_class($field) == 'File') {
-                $multipart = true;
-            }
-        }
-        return "<form class=\"form\" action=\"$this->action\" method=\"$this->method\"" . ($multipart ? 'enctype="multipart/form-data"' : '') . ">";
+        $attributes = $this->getFormAttributes();
+        return "<form class=\"form\" action=\"$this->action\" method=\"$this->method\" {$attributes['enctype']} {$attributes['html5']}>";
     }
 
     /**
@@ -353,6 +366,35 @@ FORM;
     public function closeForm()
     {
         return "</form>";
+    }
+
+    /**
+     * Check if a field exists
+     * @param string $field
+     * @return boolean
+     */
+    public function checkField($field)
+    {
+        return isset($this->fields->$field);
+    }
+
+    /**
+     * Get the attributes for the form tag
+     * @return array
+     */
+    private function getFormAttributes()
+    {
+        $enctype = '';
+        foreach ($this->fields as $field) {
+            if (get_class($field) == 'File') {
+                $enctype = 'enctype="multipart/form-data"';
+            }
+        }
+        $html5 = $this->html5 ? '' : 'novalidate';
+        return array(
+            'enctype' => $enctype,
+            'html5' => $html5
+        );
     }
 
     /**
@@ -403,26 +445,20 @@ FORM;
     }
 
     /**
-     * Check if a field exists
-     * @param string $field
-     * @return boolean
-     */
-    private function checkField($field)
-    {
-        return isset($this->fields->$field);
-    }
-
-    /**
      * Creates a new CRSF token
      * @return string
      */
     private function setToken()
     {
-        if (!isset($_SESSION['token'])) {
-            $_SESSION['token'] = array();
+        if(!isset($_SESSION["nibble_forms"])){
+            $_SESSION["nibble_forms"] = array();
         }
-        $_SESSION['token'][$this->name] = \NibbleForms\Useful::randomString(20);
-        return sprintf('<input type="hidden" value="%s" name="%s[token]" />', $_SESSION['token'][$this->name], $this->name);
+        if (!isset($_SESSION["nibble_forms"]["_crsf_token"])) {
+            $_SESSION["nibble_forms"]["_crsf_token"] = array();
+        }
+        $_SESSION["nibble_forms"]["_crsf_token"][$this->name] = \NibbleForms\Useful::randomString(20);
+        $this->addField("_crsf_token", "hidden");
+        $this->addData(array("_crsf_token" => $_SESSION["nibble_forms"]["_crsf_token"][$this->name]));
     }
 
 }

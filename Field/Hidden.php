@@ -4,9 +4,9 @@ namespace NibbleForms\Field;
 class Hidden extends Text 
 {
 
-    public function __construct($attributes = array(), $label = false, $content = '/.*/') 
+    public function __construct($label = false, $attributes = array()) 
     {
-        parent::__construct($label, $attributes, $content);
+        parent::__construct($label, $attributes);
     }
 
     public function returnField($form_name, $name, $value = '') 

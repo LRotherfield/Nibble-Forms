@@ -35,8 +35,9 @@ class Password extends Text
             }
         }
         if ($this->confirm) {
-            if ($val != $_POST[$this->confirm]) {
-                $form = \NibbleForms\NibbleForm::getInstance();
+            $form = \NibbleForms\NibbleForm::getInstance();
+            $request = strtoupper($form->getMethod()) == 'POST' ? $_POST : $_GET;
+            if ($val != $request[$form->getName()][$this->confirm]) {
                 $form->{$this->confirm}->error[] = 'must match password';
             }
         }
@@ -49,18 +50,10 @@ class Password extends Text
         return parent::returnField($form_name, $name, $value);
     }
 
-    public function addConfirmation($label, $attributes = array()) {
+    public function addConfirmation($field_name, $attributes = array()) {
         $form = \NibbleForms\NibbleForm::getInstance();
-        if ($form->checkField('confirm_password')) {
-            $i = 2;
-            while ($form->checkField('confirm_password_' . $i))
-                $i++;
-            $form->{'confirm_password_' . $i} = new Password($label, $this->attributes + $attributes, $this->content);
-            $this->confirm = 'confirm_password_' . $i;
-        } else {
-            $form->confirm_password = new Password($label, $this->attributes + $attributes, $this->content);
-            $this->confirm = 'confirm_password';
-        }
+        $form->addField($field_name, 'password', $this->attributes + $attributes);
+        $this->confirm = $field_name;
     }
 
 }

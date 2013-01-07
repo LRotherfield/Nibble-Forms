@@ -3,17 +3,16 @@ namespace NibbleForms\Field;
 
 class Select extends Options {
 
-    protected $show_size;
+    protected $show_size = false;
 
-    public function __construct($label, $options, $show_size = false, $required = true, $false_values = array()) 
+    public function __construct($label, array $choices = array(), array $attributes = array()) 
     {
-        parent::__construct($label, $options, $required, $false_values);
-        $this->show_size = $show_size;
+        parent::__construct($label, $choices, $attributes);
     }
 
     public function returnField($form_name, $name, $value = '') 
     {
-        $field = sprintf('<select name="%3$s[%1$s]" id="%3$s_%1$s" %2$s>', $name, ($this->show_size ? "size='$this->show_size'" : ''), $form_name);
+        $field = sprintf('<select name="%2$s[%1$s]" id="%2$s_%1$s">', $name, $form_name);
         foreach ($this->options as $key => $val) {
             $attributes = $this->getAttributeString($val);
             $field .= sprintf('<option value="%s" %s>%s</option>', $key, ((string) $key === (string) $value ? 'selected="selected"' : '') . $attributes['string'], $attributes['val']);

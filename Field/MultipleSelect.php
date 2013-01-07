@@ -15,7 +15,7 @@ class MultipleSelect extends MultipleOptions
 
     public function returnField($form_name, $name, $value = '') 
     {
-        $field = sprintf('<select name="%3$s[%1$s[]]" id="%3$s_%1$s" %2$s multiple="multiple">', $name, ($this->show_size ? "size='$this->show_size'" : ''), $form_name);
+        $field = sprintf('<select name="%3$s[%1$s][]" id="%3$s_%1$s" %2$s multiple="multiple">', $name, ($this->show_size ? "size='$this->show_size'" : ''), $form_name);
         foreach ($this->options as $key => $val) {
             $attributes = $this->getAttributeString($val);
             $field .= sprintf('<option value="%s" %s>%s</option>', $key, (is_array($value) && in_array((string) $key, $value) ? 'selected="selected"' : '') . $attributes['string'], $attributes['val']);

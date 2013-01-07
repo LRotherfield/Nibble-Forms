@@ -4,7 +4,7 @@ namespace NibbleForms\Field;
 abstract class Options extends BaseOptions 
 {
 
-    protected $false_values = false;
+    protected $false_values = array();
 
     public function __construct($label, $options = array(), $attributes = array()) 
     {

@@ -44,10 +44,10 @@ in its own file in the NibbleForms\Field namespace.  There is an autoloader
 so that each field can be easily loaded and extended, and, new fields can be 
 created by developers messing with the core code file.
 
-* Add field method:  This function was needed for two reasons; 1) The original 
-Nibble Forms used magic getters and setters to make form fields which 
-falls down when a field name is used that is also used as a class variable. 2) 
-Because of the namespaces, creating a form would require writing the namespace
+* Add field method:  This function was needed for two reasons;
+    - The original Nibble Forms used magic getters and setters to make form fields which
+falls down when a field name is used that is also used as a class variable.
+    - Because of the namespaces, creating a form would require writing the namespace
 for each field each time one was added, the addField method makes adding a field
 a very simple call.
 

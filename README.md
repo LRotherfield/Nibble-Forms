@@ -93,6 +93,28 @@ the array key "choices" in the field options array
 * select
 * multipleSelect
 
+Now that the form has form fields it can be rendered:
 
+`
+<? /* Render whole form */ ?>
+<?php echo $form->render() ?>
+
+<? /* Or render form elements individually with elements or whole rows */ ?>
+<?php echo $form->openForm() ?>
+<?php echo $form->renderHidden() ?>
+<?php echo $form->renderLabel('field_one') ?>
+<?php echo $form->renderField('field_one') ?>
+<?php echo $form->renderError('field_one') ?>
+<?php echo $form->renderRow('field_two') ?>
+<button type="submit">Submit</button>
+<?php echo $form->closeForm() ?>
+`
+
+Finally once the data is submitted, validate the form:
+
+`
+/* In order to render errors, this method must be called in the controller or before the form is rendered */
+$form->validate();
+`
 
 [1]: http://nibble-development.com

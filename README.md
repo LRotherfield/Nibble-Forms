@@ -76,22 +76,24 @@ $form->addField('first_name', 'text', array('required' => false));
 There are numerous form field types pre-defined in Nibble Forms, the below 
 fields can be added with no field options array:
 
-* text
-* textarea
-* password
-* email
-* url
-* file
-* captcha
+* [text][2]
+* [textarea][3]
+* [password][4]
+* [email][5]
+* [url][6]
+* [number][14]
+* [file][7]
+* [captcha][8]
+* [hidden][9]
 
 There are also 4 choice style fields that require an array of choices with
 the array key "choices" in the field options array 
 `array('choices' => array('one', 'two', 'three'))`:
 
-* radio
-* checkbox
-* select
-* multipleSelect
+* [radio][10]
+* [checkbox][11]
+* [select][12]
+* [multipleSelect][13]
 
 Now that the form has form fields it can be rendered:
 
@@ -118,3 +120,16 @@ $form->validate();
 ```
 
 [1]: http://nibble-development.com
+[2]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/text.php
+[3]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/textarea.php
+[4]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/password.php
+[5]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/email.php
+[6]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/url.php
+[14]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/number.php
+[7]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/file.php
+[8]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/captcha.php
+[9]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/hidden.php
+[10]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/radio.php
+[11]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/checkbox.php
+[12]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/select.php
+[13]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/multipleSelect.php

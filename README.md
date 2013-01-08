@@ -22,6 +22,15 @@ In addition, it is evident that there are some flaws with the originial Nibble
 Forms when using it in a large application.  These flaws where the starting 
 drive for making Nibble Forms 2:
 
+* Attributes array: The original Nibble Forms had many arguments per form field and
+the arguments where not always in the same order.  This made developing with
+Nibble Forms a slower process because each set of arguments has to be remembered
+or looked up for each form field.  Nibble forms 2 only has 3 arguments, field_name,
+field_type and field_arguments.  The field arguments is always an array of arguments which
+means no order has to be remembered.  All fields have standard arguments that can
+be defined in the array (like `"required" => true`) and some (like option fields)
+have additional arguments that can be defined too (like the array of choices).
+
 * Render individual form elements:  In the original Nibble Forms there was a 
 method for each field to add extra HTML markup around it.  When trying to 
 customise the layout of the form anything more than just adding a div around a 

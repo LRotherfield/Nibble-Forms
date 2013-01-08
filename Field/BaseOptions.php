@@ -37,12 +37,4 @@ abstract class BaseOptions extends FormField
         return array('val' => $val, 'string' => $attribute_string);
     }
     
-    public function validate($val){
-        print_r($this->false_values);
-        echo $val;
-        if (in_array($val, $this->false_values)){
-            $this->error[] = "$val is not a valid choice";
-        }
-    }
-
 }

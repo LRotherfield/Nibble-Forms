@@ -21,8 +21,8 @@ class Email extends Text
         }
         if ($this->confirm) {
             $request = strtoupper($this->form->getMethod()) == 'POST' ? $_POST : $_GET;
-            if ($val != $request[$form->getName()][$this->confirm]) {
-                $form->{$this->confirm}->error[] = 'must match email';
+            if ($val != $request[$this->form->getName()][$this->confirm]) {
+                $this->form->{$this->confirm}->error[] = 'The email addresses provided do not match';
             }
         }
         return !empty($this->error) ? false : true;

@@ -37,7 +37,7 @@ class Password extends Text
         if ($this->confirm) {
             $request = strtoupper($this->form->getMethod()) == 'POST' ? $_POST : $_GET;
             if ($val != $request[$this->form->getName()][$this->confirm]) {
-                $this->form->{$this->confirm}->error[] = 'must match password';
+                $this->error[] = 'The passwords provided do not match password';
             }
         }
         return !empty($this->error) ? false : true;

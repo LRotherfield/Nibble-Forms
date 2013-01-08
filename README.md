@@ -41,3 +41,5 @@ falls down when a field name is used that is also used as a class variable. 2)
 Because of the namespaces, creating a form would require writing the namespace
 for each field each time one was added, the addField method makes adding a field
 a very simple call.
+
+[1]: http://nibble-development.com

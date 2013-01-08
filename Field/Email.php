@@ -22,7 +22,7 @@ class Email extends Text
         if ($this->confirm) {
             $request = strtoupper($this->form->getMethod()) == 'POST' ? $_POST : $_GET;
             if ($val != $request[$this->form->getName()][$this->confirm]) {
-                $this->form->{$this->confirm}->error[] = 'The email addresses provided do not match';
+                $this->error[] = 'The email addresses provided do not match';
             }
         }
         return !empty($this->error) ? false : true;
@@ -31,7 +31,7 @@ class Email extends Text
     public function addConfirmation($field_name, array $attributes = array())
     {
         $this->form->addField($field_name, 'email', $attributes + $this->attributes);
-        $this->confirm = $field_name;
+        $this->confirm = \NibbleForms\Useful::slugify($field_name, '_');;
     }
 
     public function returnField($form_name, $name, $value = '')

@@ -130,7 +130,7 @@ require_once dirname(__FILE__) . '/NibbleForm.class.php';
 $form = \NibbleForms\NibbleForm::getInstance('mega_form');
 
 /* Text field with custom class and max length attribute */
-$form->addField('first_name', 'text', array(
+$form->addField('text_field', 'text', array(
     'class' => 'testy classes',
     'max_length' => 20
 ));
@@ -138,15 +138,15 @@ $form->addField('first_name', 'text', array(
 /* Email field, not required and custom label text */
 $email = $form->addfield('email', 'email', array(
     'required' => false,
-    'label' => 'Please confirm your email'
+    'label' => 'Please enter your email address'
         ));
 /* Email confirmation field which must match the value for email */
 $email->addConfirmation('confirm_email', array(
-    'label' => 'Please confirm your email'
+    'label' => 'Please confirm your email address'
 ));
 
 /* Radio button field with two options, first option has an additional attribute */
-$form->addField('example_select', 'radio', array(
+$form->addField('choice', 'radio', array(
     'choices' => array(
         "one" => array('data-example' => 'data-attribute-value', 'Choice One'),
         "two" => "Choice Two"),

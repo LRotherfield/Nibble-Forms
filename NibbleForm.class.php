@@ -28,7 +28,7 @@ namespace NibbleForms;
 class NibbleForm
 {
 
-    protected $action, $method, $submit_value, $fields, $sticky, $format, $message_type, $flash, $multiple_errors, $html5;
+    protected $action, $method, $submit_value, $fields, $sticky, $format, $message_type, $multiple_errors, $html5;
     protected $valid = true;
     protected $name = 'nibble_form';
     protected $messages = array();
@@ -108,13 +108,13 @@ class NibbleForm
      * @return NibbleForm
      */
     public static function getInstance(
-        $action = '/',
+        $action = '',
         $html5 = true,
         $method = 'post',
         $submit_value = 'Submit',
+        $format = 'list',
         $sticky = true,
         $message_type = 'list',
-        $format = 'list',
         $multiple_errors = false
     ) {
         if (!self::$instance) {
@@ -351,6 +351,24 @@ FORM;
 
         return $error_string === '' ? false : "<ul>$error_string</ul>";
     }
+    
+    /**
+     * Returns the boolean depending on existance of errors for specified 
+     * form field
+     *
+     * @param string $name
+     *
+     * @return boolean
+     */
+    public function hasError($name)
+    {
+        $errors = $this->getFieldData($name, 'messages');
+        if (!$errors || !is_array($errors)) {
+            return false;
+        }
+        
+        return true;
+    }
 
     /**
      * Returns the entire HTML structure for a form field
@@ -464,7 +482,7 @@ FORM;
     }
 
     /**
-     * Adds a message string to the class messages array or as a flash message
+     * Adds a message string to the class messages array
      *
      * @param string $message
      * @param string $title
@@ -472,9 +490,7 @@ FORM;
     private function setMessages($message, $title)
     {
         $title = preg_replace('/_/', ' ', ucfirst($title));
-        if ($this->message_type == 'flash') {
-            $this->flash->message(ucfirst($message), $title, 0, true);
-        } elseif ($this->message_type == 'list') {
+        if ($this->message_type == 'list') {
             $this->messages[] = array('title' => $title, 'message' => ucfirst($message));
         }
     }

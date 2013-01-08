@@ -17,13 +17,17 @@ abstract class MultipleOptions extends BaseOptions
 
     public function validate($val)
     {
-        parent::validate($val);
         if (is_array($val)) {
             if ($this->minimum_selected && count($val) < $this->minimum_selected) {
                 $this->error[] = sprintf('at least %s options must be selected', $this->minimum_selected);
             }
         } elseif ($this->required) {
             $this->error[] = 'is required';
+        }
+        foreach($val as $answer){
+            if (in_array($answer, $this->false_values)){
+                $this->error[] = "$answer is not a valid choice";
+            }
         }
         return !empty($this->error) ? false : true;
     }

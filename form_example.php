@@ -14,7 +14,7 @@ $email = $form->addfield('email', 'email', array(
 $email->addConfirmation('confirm_email', array(
     'label' => 'Please confirm your email'
 ));
-$form->addField('example_select', 'multipleSelect', array(
+$form->addField('example_select', 'radio', array(
     'choices' => array(
         "luke" => array('data-luke' => '2five', 'Luke'),
         "ben" => "Ben"),

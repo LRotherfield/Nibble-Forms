@@ -13,10 +13,10 @@ class Radio extends Options
                     '<label for="%6$s_%3$s">%5$s</label>'
                     , $name, $key, \NibbleForms\Useful::slugify($name) . '_' . \NibbleForms\Useful::slugify($key), ((string) $key === (string) $value ? 'checked="checked"' : '') . $attributes['string'], $attributes['val'], $form_name);
         }
-        $class = !empty($this->error) ? ' class="error"' : '';
+        $class = !empty($this->error) ? 'error choice_label' : 'choice_label';
         return array(
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
-            'label' => $this->label == false ? false : sprintf('<p%s>%s</p>', $class, $this->label),
+            'label' => $this->label == false ? false : sprintf('<label class="%s">%s</p>', $class, $this->label),
             'field' => $field,
             'html' => $this->html
         );

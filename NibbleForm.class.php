@@ -163,6 +163,7 @@ class NibbleForm
             return false;
         }
         $this->fields->$field_name = new $namespace($label, $attributes);
+        $this->fields->$field_name->setForm($this);
 
         return $this->fields->$field_name;
     }

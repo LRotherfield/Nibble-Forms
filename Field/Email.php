@@ -20,8 +20,7 @@ class Email extends Text
             }
         }
         if ($this->confirm) {
-            $form = \NibbleForms\NibbleForm::getInstance();
-            $request = strtoupper($form->getMethod()) == 'POST' ? $_POST : $_GET;
+            $request = strtoupper($this->form->getMethod()) == 'POST' ? $_POST : $_GET;
             if ($val != $request[$form->getName()][$this->confirm]) {
                 $form->{$this->confirm}->error[] = 'must match email';
             }
@@ -31,8 +30,7 @@ class Email extends Text
 
     public function addConfirmation($field_name, array $attributes = array())
     {
-        $form = \NibbleForms\NibbleForm::getInstance();
-        $form->addField($field_name, 'email', $this->attributes + $attributes);
+        $this->form->addField($field_name, 'email', $attributes + $this->attributes);
         $this->confirm = $field_name;
     }
 

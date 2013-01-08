@@ -16,10 +16,10 @@ class Select extends Options {
             $field .= sprintf('<option value="%s" %s>%s</option>', $key, ((string) $key === (string) $value ? 'selected="selected"' : '') . $attributes['string'], $attributes['val']);
         }
         $field .= '</select>';
-        $class = !empty($this->error) ? ' class="error"' : '';
+        $class = !empty($this->error) ? 'error choice_label' : 'choice_label';
         return array(
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
-            'label' => $this->label == false ? false : sprintf('<label for="%s_%s"%s>%s</label>', $form_name, $name, $class, $this->label),
+            'label' => $this->label == false ? false : sprintf('<label for="%s_%s" class="%s">%s</label>', $form_name, $name, $class, $this->label),
             'field' => $field,
             'html' => $this->html
         );

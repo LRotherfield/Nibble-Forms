@@ -60,7 +60,7 @@ class NibbleForm
                 'close_submit'    => '</td></tr></tfoot>'
             )
         );
-    protected static $instance;
+    protected static $instance = array();
 
     /**
      * @param string  $action
@@ -108,6 +108,7 @@ class NibbleForm
      * @return NibbleForm
      */
     public static function getInstance(
+        $name = '',
         $action = '',
         $html5 = true,
         $method = 'post',
@@ -117,12 +118,12 @@ class NibbleForm
         $message_type = 'list',
         $multiple_errors = false
     ) {
-        if (!self::$instance) {
-            self::$instance
+        if (!isset(self::$instance[$name])) {
+            self::$instance[$name]
                 = new NibbleForm($action, $submit_value, $html5, $method, $sticky, $message_type, $format, $multiple_errors);
         }
 
-        return self::$instance;
+        return self::$instance[$name];
     }
 
     /**

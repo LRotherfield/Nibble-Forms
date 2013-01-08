@@ -18,6 +18,9 @@ validation methods. `$form->addField('example_text_field', 'text');`
 markup, add extra field attributes, change field validation, markup forms with
 custom HTML, turn on HTML5 validation and much more.
 
+* Validation out of the box:  Each form field in Nibble Forms 2 has standard
+validation built in.  E.g. Email fields accept only valid emails etc
+
 In addition, it is evident that there are some flaws with the originial Nibble
 Forms when using it in a large application.  These flaws where the starting 
 drive for making Nibble Forms 2:
@@ -50,5 +53,46 @@ falls down when a field name is used that is also used as a class variable.
     - Because of the namespaces, creating a form would require writing the namespace
 for each field each time one was added, the addField method makes adding a field
 a very simple call.
+
+## Simple usage
+
+Each form used in one server request requires its own instance of Nibble Forms,
+the class must be included in order to get an instance:
+
+`
+/* Require the Nibble Forms class */
+require_once dirname(__FILE__) . '/NibbleForm.class.php';
+/* Get an instance of the form called "form_one" */
+$form = \NibbleForms\NibbleForm::getInstance('form_one');
+`
+
+Form fields can then be added to a form instance using the addField method:
+
+`
+/* Add field using 3 arguments; field name, field type and field options */
+$form->addField('first_name', 'text', array('required' => false));
+`
+
+There are numerous form field types pre-defined in Nibble Forms, the below 
+fields can be added with no field options array:
+
+* text
+* textarea
+* password
+* email
+* url
+* file
+* captcha
+
+There are also 4 choice style fields that require an array of choices with
+the array key "choices" in the field options array 
+`array('choices' => array('one', 'two', 'three'))`:
+
+* radio
+* checkbox
+* select
+* multipleSelect
+
+
 
 [1]: http://nibble-development.com

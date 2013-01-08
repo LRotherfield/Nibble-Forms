@@ -95,7 +95,7 @@ the array key "choices" in the field options array
 
 Now that the form has form fields it can be rendered:
 
-``` html
+``` php
 <? /* Render whole form */ ?>
 <?php echo $form->render() ?>
 

@@ -59,19 +59,19 @@ a very simple call.
 Each form used in one server request requires its own instance of Nibble Forms,
 the class must be included in order to get an instance:
 
-`
+``` php
 /* Require the Nibble Forms class */
 require_once dirname(__FILE__) . '/NibbleForm.class.php';
 /* Get an instance of the form called "form_one" */
 $form = \NibbleForms\NibbleForm::getInstance('form_one');
-`
+```
 
 Form fields can then be added to a form instance using the addField method:
 
-`
+``` php
 /* Add field using 3 arguments; field name, field type and field options */
 $form->addField('first_name', 'text', array('required' => false));
-`
+```
 
 There are numerous form field types pre-defined in Nibble Forms, the below 
 fields can be added with no field options array:
@@ -95,7 +95,7 @@ the array key "choices" in the field options array
 
 Now that the form has form fields it can be rendered:
 
-`
+``` html
 <? /* Render whole form */ ?>
 <?php echo $form->render() ?>
 
@@ -108,13 +108,13 @@ Now that the form has form fields it can be rendered:
 <?php echo $form->renderRow('field_two') ?>
 <button type="submit">Submit</button>
 <?php echo $form->closeForm() ?>
-`
+````
 
 Finally once the data is submitted, validate the form:
 
-`
+``` php
 /* In order to render errors, this method must be called in the controller or before the form is rendered */
 $form->validate();
-`
+```
 
 [1]: http://nibble-development.com

@@ -539,7 +539,7 @@ FORM;
 
 }
 
-spl_autoload_register(__NAMESPACE__ . "\NibbleForm::nibbleLoader");
+spl_autoload_register(__NAMESPACE__ . "\\NibbleForm::nibbleLoader");
 
 class Useful
 {

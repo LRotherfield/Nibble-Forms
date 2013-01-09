@@ -22,11 +22,11 @@ custom HTML, turn on HTML5 validation and much more.
 validation built in.  E.g. Email fields accept only valid emails etc
 
 In addition, it is evident that there are some flaws with the originial Nibble
-Forms when using it in a large application.  These flaws where the starting 
+Forms when using it in a large application.  These flaws were the starting
 drive for making Nibble Forms 2:
 
 * Attributes array: The original Nibble Forms had many arguments per form field and
-the arguments where not always in the same order.  This made developing with
+the arguments were not always in the same order.  This made developing with
 Nibble Forms a slower process because each set of arguments has to be remembered
 or looked up for each form field.  Nibble forms 2 only has 3 arguments, field_name,
 field_type and field_arguments.  The field arguments is always an array of arguments which
@@ -45,7 +45,7 @@ structure needed. `$form->renderRow('example_text_field')`
 * PHP namespaces:  To make the code more legible, Nibble Forms 2 has each field
 in its own file in the NibbleForms\Field namespace.  There is an autoloader
 so that each field can be easily loaded and extended, and, new fields can be 
-created by developers messing with the core code file.
+created by developers without messing around with the core code file.
 
 * Add field method:  This function was needed for two reasons;
     - The original Nibble Forms used magic getters and setters to make form fields which

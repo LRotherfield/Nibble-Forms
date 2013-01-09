@@ -1,6 +1,6 @@
 ## Nibble Forms 2, PHP form class
 
-Nibble Forms 2 is a PHP form class that allows developers to quickly create 
+[Nibble Forms 2][15] is a PHP form class that allows developers to quickly create 
 HTML5 forms and validate submitted results.  Nibble Forms 2 is an evolution
 of the original [Nibble Forms][1] class, it follows some of the key principles
 of Nibble Forms;
@@ -124,7 +124,7 @@ An example form instantition (without rendering) will look something like:
 <?php
 
 /* Require Nibble Forms 2 */
-require_once dirname(__FILE__) . '/NibbleForm.class.php';
+require_once __DIR__ . '/NibbleForm.class.php';
 
 /* Get Nibble Forms 2 instance called mega_form */
 $form = \NibbleForms\NibbleForm::getInstance('mega_form');
@@ -159,7 +159,8 @@ if ($form->validate()) {
 }
 ```
 
-[1]: http://nibble-development.com
+[1]: http://nibble-development.com/nibble-forms-php-form-class
+[15]: http://nibble-development.com/nibble-forms-2-php-form-class
 [2]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/text.php
 [3]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/textarea.php
 [4]: https://github.com/LRotherfield/Nibble-Forms/blob/master/Field/password.php

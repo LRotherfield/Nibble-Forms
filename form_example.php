@@ -1,7 +1,7 @@
 <?php
 
 /* Require Nibble Forms 2 */
-require_once dirname(__FILE__) . '/NibbleForm.class.php';
+require_once __DIR__ . '/NibbleForm.class.php';
 
 /* Get Nibble Forms 2 instance called mega_form */
 $form = \NibbleForms\NibbleForm::getInstance('mega_form');

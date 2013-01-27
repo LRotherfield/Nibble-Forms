@@ -133,7 +133,7 @@ class NibbleForm
      */
     public static function nibbleLoader($class)
     {
-        $namespace = explode('\\', $class);
+        $namespace = explode('\\', trim($class));
         if ($namespace[0] == "NibbleForms") {
             array_shift($namespace);
         }

@@ -134,8 +134,10 @@ class NibbleForm
     public static function nibbleLoader($class)
     {
         $namespace = explode('\\', trim($class));
-        if ($namespace[0] == "NibbleForms") {
-            array_shift($namespace);
+        foreach($namespace as $key => $value){
+            if (empty($value) || $value === "NibbleForms") {
+                unset($namespace[$key]);
+            }
         }
         $filepath = __DIR__ . '/' . implode('/', $namespace) . '.php';
         if(file_exists($filepath)){

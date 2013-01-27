@@ -137,7 +137,7 @@ class NibbleForm
         if ($namespace[0] == "NibbleForms") {
             array_shift($namespace);
         }
-        $filepath = dirname(__FILE__) . '/' . implode('/', $namespace) . '.php';
+        $filepath = __DIR__ . '/' . implode('/', $namespace) . '.php';
         if(file_exists($filepath)){
             require_once $filepath;
         }

@@ -25,7 +25,7 @@
 
 namespace NibbleForms;
 
-class NibbleForm.class
+class NibbleForm
 {
 
     protected $action, $method, $submit_value, $fields, $sticky, $format, $message_type, $multiple_errors, $html5;
@@ -139,7 +139,7 @@ class NibbleForm.class
                 unset($namespace[$key]);
             }
         }
-        $filepath = __DIR__ . '/' . implode('/', $namespace) . '.php';
+        $filepath = __DIR__ . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $namespace) . '.php';
         if (file_exists($filepath)) {
             require_once $filepath;
         }
@@ -577,8 +577,8 @@ class Useful
     public static function stripper($val)
     {
         foreach (array(' ', '&nbsp;', '\n', '\t', '\r') as $strip) {
-                    $val = str_replace($strip, '', (string) $val);
-                }
+            $val = str_replace($strip, '', (string) $val);
+        }
 
         return $val === '' ? false : $val;
     }
@@ -607,8 +607,9 @@ class Useful
     public static function randomString($length = 10, $return = '')
     {
         $string = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890';
-        while ($length-- > 0)
+        while ($length-- > 0){
             $return .= $string[mt_rand(0, strlen($string) - 1)];
+        }
 
         return $return;
     }

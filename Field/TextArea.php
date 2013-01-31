@@ -1,23 +1,24 @@
 <?php
 namespace NibbleForms\Field;
 
-class TextArea extends Text 
+class TextArea extends Text
 {
 
-    public function __construct($label, $attributes) 
+    public function __construct($label, $attributes)
     {
         parent::__construct($label, $attributes);
-        if (!isset($attributes['rows'])){
+        if (!isset($attributes['rows'])) {
             $attributes['rows'] = 6;
         }
-        if (!isset($attributes['cols'])){
+        if (!isset($attributes['cols'])) {
             $attributes['cols'] = 60;
         }
     }
 
-    public function returnField($form_name, $name, $value = '') 
+    public function returnField($form_name, $name, $value = '')
     {
         $this->attributeString();
+
         return array(
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
             'label' => $this->label == false ? false : sprintf('<label for="%s_%s" class="%s">%s</label>', $form_name, $name, $this->class, $this->label),

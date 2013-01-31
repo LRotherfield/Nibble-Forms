@@ -45,6 +45,7 @@ class Text extends FormField
     public function returnField($form_name, $name, $value = '')
     {
         $this->attributeString();
+
         return array(
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
             'label' => $this->label === false ? false : sprintf('<label for="%s_%s" class="%s">%s</label>', $form_name, $name, $this->class, $this->label),
@@ -65,6 +66,7 @@ class Text extends FormField
                 $this->error[] = 'is not valid';
             }
         }
+
         return !empty($this->error) ? false : true;
     }
 

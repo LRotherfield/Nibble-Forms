@@ -8,11 +8,11 @@ abstract class FormField
     protected $form;
     public $html = array(
         'open_field' => false,
-        'close_field' => false,        
+        'close_field' => false,
         'open_html' => false,
         'close_html' => false
     );
-    
+
     public function setForm($form)
     {
         $this->form = $form;

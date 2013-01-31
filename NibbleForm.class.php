@@ -25,7 +25,7 @@
 
 namespace NibbleForms;
 
-class NibbleForm
+class NibbleForm.class
 {
 
     protected $action, $method, $submit_value, $fields, $sticky, $format, $message_type, $multiple_errors, $html5;
@@ -134,13 +134,13 @@ class NibbleForm
     public static function nibbleLoader($class)
     {
         $namespace = explode('\\', trim($class));
-        foreach($namespace as $key => $value){
+        foreach ($namespace as $key => $value) {
             if (empty($value) || $value === "NibbleForms") {
                 unset($namespace[$key]);
             }
         }
         $filepath = __DIR__ . '/' . implode('/', $namespace) . '.php';
-        if(file_exists($filepath)){
+        if (file_exists($filepath)) {
             require_once $filepath;
         }
     }
@@ -265,11 +265,11 @@ class NibbleForm
         $fields = '';
         $error = $this->valid ? ''
             : '<p class="error">Sorry there were some errors in the form, problem fields have been highlighted</p>';
-        $format = (object)$this->formats[$this->format];
+        $format = (object) $this->formats[$this->format];
         $this->setToken();
 
         foreach ($this->fields as $key => $value) {
-            $format = (object)$this->formats[$this->format];
+            $format = (object) $this->formats[$this->format];
             $temp = isset($this->data[$key]) ? $value->returnField($this->name, $key, $this->data[$key])
                 : $value->returnField($this->name, $key);
             $fields .= $format->open_field;
@@ -358,9 +358,9 @@ FORM;
 
         return $error_string === '' ? false : "<ul>$error_string</ul>";
     }
-    
+
     /**
-     * Returns the boolean depending on existance of errors for specified 
+     * Returns the boolean depending on existance of errors for specified
      * form field
      *
      * @param string $name
@@ -373,7 +373,7 @@ FORM;
         if (!$errors || !is_array($errors)) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -576,9 +576,8 @@ class Useful
      */
     public static function stripper($val)
     {
-        foreach (array(' ', '&nbsp;', '\n', '\t', '\r') as $strip)
-                {
-                    $val = str_replace($strip, '', (string)$val);
+        foreach (array(' ', '&nbsp;', '\n', '\t', '\r') as $strip) {
+                    $val = str_replace($strip, '', (string) $val);
                 }
 
         return $val === '' ? false : $val;

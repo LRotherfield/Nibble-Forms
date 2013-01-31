@@ -24,11 +24,12 @@ abstract class MultipleOptions extends BaseOptions
         } elseif ($this->required) {
             $this->error[] = 'is required';
         }
-        foreach($val as $answer){
-            if (in_array($answer, $this->false_values)){
+        foreach ($val as $answer) {
+            if (in_array($answer, $this->false_values)) {
                 $this->error[] = "$answer is not a valid choice";
             }
         }
+
         return !empty($this->error) ? false : true;
     }
 

@@ -1,18 +1,18 @@
 <?php
 namespace NibbleForms\Field;
 
-class Captcha extends FormField 
+class Captcha extends FormField
 {
 
     public $error = array();
     protected $label;
 
-    public function __construct($label = 'Humanity Check') 
+    public function __construct($label = 'Humanity Check')
     {
         $this->label = $label;
     }
 
-    public function returnField($form_name, $name, $value = '') 
+    public function returnField($form_name, $name, $value = '')
     {
         $field = <<<FIELD
 <script type="text/javascript"
@@ -28,6 +28,7 @@ class Captcha extends FormField
 </noscript>
 FIELD;
         $class = !empty($this->error) ? ' class="error"' : '';
+
         return array(
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
             'label' => $this->label == false ? false : sprintf('<label for="%s"%s>%s</label>', $name, $class, $this->label),
@@ -36,7 +37,7 @@ FIELD;
         );
     }
 
-    public function validate($val) 
+    public function validate($val)
     {
 
         $url = 'http://www.google.com/recaptcha/api/verify';
@@ -69,13 +70,13 @@ FIELD;
 
         fwrite($fs, $http_request);
 
-        while (!feof($fs)){
+        while (!feof($fs)) {
             $response .= fgets($fs, 1160); // One TCP-IP packet
         }
         fclose($fs);
         $response = explode("\r\n\r\n", $response);
         $response = explode("\n", $response[1]);
-        if (!isset($response[0]) || $response[0] != 'true'){
+        if (!isset($response[0]) || $response[0] != 'true') {
             $this->error[] = 'You failed to prove you humanity';
         }
         //curl_close($ch);

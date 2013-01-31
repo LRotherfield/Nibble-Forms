@@ -1,19 +1,20 @@
 <?php
 namespace NibbleForms\Field;
 
-abstract class Options extends BaseOptions 
+abstract class Options extends BaseOptions
 {
 
-    public function validate($val) 
+    public function validate($val)
     {
-        if ($this->required){
-            if (\NibbleForms\Useful::stripper($val) === false){
+        if ($this->required) {
+            if (\NibbleForms\Useful::stripper($val) === false) {
                 $this->error[] = 'is required';
             }
         }
-        if (in_array($val, $this->false_values)){
+        if (in_array($val, $this->false_values)) {
             $this->error[] = "$val is not a valid choice";
         }
+
         return !empty($this->error) ? false : true;
     }
 

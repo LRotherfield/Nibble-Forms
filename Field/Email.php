@@ -25,6 +25,7 @@ class Email extends Text
                 $this->error[] = 'The email addresses provided do not match';
             }
         }
+
         return !empty($this->error) ? false : true;
     }
 
@@ -37,6 +38,7 @@ class Email extends Text
     public function returnField($form_name, $name, $value = '')
     {
         $this->field_type = 'email';
+
         return parent::returnField($form_name, $name, $value);
     }
 

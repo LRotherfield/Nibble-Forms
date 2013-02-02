@@ -1,6 +1,6 @@
 <?php
 
-namespace NibbleForms\Field;
+namespace Nibble\NibbleForms\Field;
 
 abstract class MultipleOptions extends BaseOptions
 {

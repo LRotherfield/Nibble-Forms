@@ -1,5 +1,8 @@
 <?php
-namespace NibbleForms\Field;
+
+namespace Nibble\NibbleForms\Field;
+
+use Nibble\NibbleForms\Useful;
 
 class Password extends Text
 {
@@ -25,7 +28,7 @@ class Password extends Text
             return false;
         }
         if (parent::validate($val)) {
-            if (\NibbleForms\Useful::stripper($val) !== false) {
+            if (Useful::stripper($val) !== false) {
                 if ($this->min_length && strlen($val) < $this->min_length) {
                     $this->error[] = sprintf('must be more than %s characters', $this->min_length);
                 }

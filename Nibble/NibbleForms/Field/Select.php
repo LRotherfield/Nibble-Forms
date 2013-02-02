@@ -1,20 +1,19 @@
 <?php
-namespace NibbleForms\Field;
+namespace Nibble\NibbleForms\Field;
 
-class MultipleSelect extends MultipleOptions
+class Select extends Options
 {
-
-    public function __construct($label, $attributes = array())
+    public function __construct($label, array $attributes = array())
     {
         parent::__construct($label, $attributes);
     }
 
     public function returnField($form_name, $name, $value = '')
     {
-        $field = sprintf('<select name="%2$s[%1$s][]" id="%2$s_%1$s" multiple="multiple">', $name, $form_name);
+        $field = sprintf('<select name="%2$s[%1$s]" id="%2$s_%1$s">', $name, $form_name);
         foreach ($this->options as $key => $val) {
             $attributes = $this->getAttributeString($val);
-            $field .= sprintf('<option value="%s" %s>%s</option>', $key, (is_array($value) && in_array((string) $key, $value) ? 'selected="selected"' : '') . $attributes['string'], $attributes['val']);
+            $field .= sprintf('<option value="%s" %s>%s</option>', $key, ((string) $key === (string) $value ? 'selected="selected"' : '') . $attributes['string'], $attributes['val']);
         }
         $field .= '</select>';
         $class = !empty($this->error) ? 'error choice_label' : 'choice_label';

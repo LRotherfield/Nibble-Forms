@@ -1,5 +1,8 @@
 <?php
-namespace NibbleForms\Field;
+
+namespace Nibble\NibbleForms\Field;
+
+use Nibble\NibbleForms\Useful;
 
 abstract class Options extends BaseOptions
 {
@@ -7,7 +10,7 @@ abstract class Options extends BaseOptions
     public function validate($val)
     {
         if ($this->required) {
-            if (\NibbleForms\Useful::stripper($val) === false) {
+            if (Useful::stripper($val) === false) {
                 $this->error[] = 'is required';
             }
         }

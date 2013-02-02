@@ -1,6 +1,8 @@
 <?php
 
-namespace NibbleForms\Field;
+namespace Nibble\NibbleForms\Field;
+
+use Nibble\NibbleForms\Useful;
 
 class Email extends Text
 {
@@ -13,7 +15,7 @@ class Email extends Text
             return false;
         }
         if (parent::validate($val)) {
-            if (\NibbleForms\Useful::stripper($val) !== false) {
+            if (Useful::stripper($val) !== false) {
                 if (!filter_var($val, FILTER_VALIDATE_EMAIL)) {
                     $this->error[] = 'must be a valid email address';
                 }
@@ -32,7 +34,7 @@ class Email extends Text
     public function addConfirmation($field_name, array $attributes = array())
     {
         $this->form->addField($field_name, 'email', $attributes + $this->attributes);
-        $this->confirm = \NibbleForms\Useful::slugify($field_name, '_');;
+        $this->confirm = Useful::slugify($field_name, '_');;
     }
 
     public function returnField($form_name, $name, $value = '')

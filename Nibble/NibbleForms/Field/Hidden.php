@@ -1,5 +1,5 @@
 <?php
-namespace NibbleForms\Field;
+namespace Nibble\NibbleForms\Field;
 
 class Hidden extends Text
 {

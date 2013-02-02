@@ -1,10 +1,10 @@
 <?php
 
 /* Require Nibble Forms 2 */
-require_once __DIR__ . '/NibbleForm.class.php';
+require_once __DIR__ . '/Nibble/NibbleForms/NibbleForm.php';
 
 /* Get Nibble Forms 2 instance called mega_form */
-$form = \NibbleForms\NibbleForm::getInstance('mega_form');
+$form = \Nibble\NibbleForms\NibbleForm::getInstance('mega_form');
 
 /* Text field with custom class and max length attribute */
 $form->addField('text_field', 'text', array(

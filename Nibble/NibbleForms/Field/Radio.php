@@ -1,7 +1,10 @@
 <?php
-namespace NibbleForms\Field;
 
-class Checkbox extends MultipleOptions
+namespace Nibble\NibbleForms\Field;
+
+use Nibble\NibbleForms\Useful;
+
+class Radio extends Options
 {
 
     public function returnField($form_name, $name, $value = '')
@@ -9,9 +12,9 @@ class Checkbox extends MultipleOptions
         $field = '';
         foreach ($this->options as $key => $val) {
             $attributes = $this->getAttributeString($val);
-            $field .= sprintf('<input type="checkbox" name="%6$s[%1$s][]" id="%6$s_%3$s" value="%2$s" %4$s/>' .
+            $field .= sprintf('<input type="radio" name="%6$s[%1$s]" id="%6$s_%3$s" value="%2$s" %4$s/>' .
                     '<label for="%6$s_%3$s">%5$s</label>'
-                    , $name, $key, \NibbleForms\Useful::slugify($name) . '_' . \NibbleForms\Useful::slugify($key), (is_array($value) && in_array((string) $key, $value) ? 'checked="checked"' : '') . $attributes['string'], $attributes['val'], $form_name);
+                    , $name, $key, Useful::slugify($name) . '_' . Useful::slugify($key), ((string) $key === (string) $value ? 'checked="checked"' : '') . $attributes['string'], $attributes['val'], $form_name);
         }
         $class = !empty($this->error) ? 'error choice_label' : 'choice_label';
 

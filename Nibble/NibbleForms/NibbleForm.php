@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-namespace NibbleForms;
+namespace Nibble\NibbleForms;
 
 class NibbleForm
 {
@@ -92,6 +92,7 @@ class NibbleForm
         $this->format = $format;
         $this->message_type = $message_type;
         $this->multiple_errors = $multiple_errors;
+        spl_autoload_register(array($this, 'nibbleLoader'));
     }
 
     /**
@@ -135,11 +136,11 @@ class NibbleForm
     {
         $namespace = explode('\\', trim($class));
         foreach ($namespace as $key => $value) {
-            if (empty($value) || $value === "NibbleForms") {
+            if (empty($value)) {
                 unset($namespace[$key]);
             }
         }
-        $filepath = __DIR__ . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $namespace) . '.php';
+        $filepath = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $namespace) . '.php';
         if (file_exists($filepath)) {
             require_once $filepath;
         }
@@ -157,7 +158,7 @@ class NibbleForm
      */
     public function addField($field_name, $type = 'text', array $attributes = array(), $overwrite = false)
     {
-        $namespace = "\\NibbleForms\\Field\\" . ucfirst($type);
+        $namespace = "\\Nibble\\NibbleForms\\Field\\" . ucfirst($type);
         if (isset($attributes['label'])) {
             $label = $attributes['label'];
         } else {
@@ -403,7 +404,7 @@ FORM;
         $this->setToken();
         $fields = array();
         foreach ($this->fields as $name => $field) {
-            if (get_class($field) == 'NibbleForms\\Field\\Hidden') {
+            if (get_class($field) == 'Nibble\\NibbleForms\\Field\\Hidden') {
                 if (isset($this->data[$name])) {
                     $field_data = $field->returnField($this->name, $name, $this->data[$name]);
                 } else {
@@ -555,63 +556,10 @@ FORM;
         if (!isset($_SESSION["nibble_forms"]["_crsf_token"])) {
             $_SESSION["nibble_forms"]["_crsf_token"] = array();
         }
-        $_SESSION["nibble_forms"]["_crsf_token"][$this->name] = \NibbleForms\Useful::randomString(20);
+        $_SESSION["nibble_forms"]["_crsf_token"][$this->name] = Useful::randomString(20);
         $this->addField("_crsf_token", "hidden");
         $this->addData(array("_crsf_token" => $_SESSION["nibble_forms"]["_crsf_token"][$this->name]));
     }
 
 }
 
-spl_autoload_register(__NAMESPACE__ . "\\NibbleForm::nibbleLoader");
-
-class Useful
-{
-
-    /**
-     * Strip out all empty characters from a string
-     *
-     * @param string $val
-     *
-     * @return string
-     */
-    public static function stripper($val)
-    {
-        foreach (array(' ', '&nbsp;', '\n', '\t', '\r') as $strip) {
-            $val = str_replace($strip, '', (string) $val);
-        }
-
-        return $val === '' ? false : $val;
-    }
-
-    /**
-     * Slugify a string using a specified replacement for empty characters
-     *
-     * @param string $text
-     * @param string $replacement
-     *
-     * @return string
-     */
-    public static function slugify($text, $replacement = '-')
-    {
-        return strtolower(trim(preg_replace('/\W+/', $replacement, $text), '-'));
-    }
-
-    /**
-     * Return a random string of specified length
-     *
-     * @param int    $length
-     * @param string $return
-     *
-     * @return string
-     */
-    public static function randomString($length = 10, $return = '')
-    {
-        $string = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890';
-        while ($length-- > 0){
-            $return .= $string[mt_rand(0, strlen($string) - 1)];
-        }
-
-        return $return;
-    }
-
-}

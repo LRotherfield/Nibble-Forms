@@ -61,9 +61,9 @@ the class must be included in order to get an instance:
 
 ``` php
 /* Require the Nibble Forms class */
-require_once dirname(__FILE__) . '/NibbleForm.class.php';
+require_once dirname(__FILE__) . '/Nibble/NibbleForms/NibbleForm.php';
 /* Get an instance of the form called "form_one" */
-$form = \NibbleForms\NibbleForm::getInstance('form_one');
+$form = \Nibble\NibbleForms\NibbleForm::getInstance('form_one');
 ```
 
 Form fields can then be added to a form instance using the addField method:
@@ -124,10 +124,10 @@ An example form instantition (without rendering) will look something like:
 <?php
 
 /* Require Nibble Forms 2 */
-require_once __DIR__ . '/NibbleForm.class.php';
+require_once __DIR__ . '/Nibble/NibbleForms/NibbleForm.php';
 
 /* Get Nibble Forms 2 instance called mega_form */
-$form = \NibbleForms\NibbleForm::getInstance('mega_form');
+$form = \Nibble\NibbleForms\NibbleForm::getInstance('mega_form');
 
 /* Text field with custom class and max length attribute */
 $form->addField('text_field', 'text', array(

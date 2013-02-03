@@ -1,7 +1,9 @@
 <?php
 namespace Nibble\NibbleForms\Field;
 
-class Captcha extends FormField
+use Nibble\NibbleForms\Field;
+
+class Captcha extends Field
 {
 
     public $error = array();

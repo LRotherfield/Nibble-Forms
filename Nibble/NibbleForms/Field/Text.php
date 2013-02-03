@@ -3,8 +3,9 @@
 namespace Nibble\NibbleForms\Field;
 
 use Nibble\NibbleForms\Useful;
+use Nibble\NibbleForms\Field;
 
-class Text extends FormField
+class Text extends Field
 {
 
     protected $label,

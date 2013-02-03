@@ -1,7 +1,9 @@
 <?php
 namespace Nibble\NibbleForms\Field;
 
-class File extends FormField
+use Nibble\NibbleForms\Field;
+
+class File extends Field
 {
 
     private $label;

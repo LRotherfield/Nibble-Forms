@@ -1,7 +1,7 @@
 <?php
-namespace Nibble\NibbleForms\Field;
+namespace Nibble\NibbleForms;
 
-abstract class FormField
+abstract class Field
 {
 
     public $custom_error = array();

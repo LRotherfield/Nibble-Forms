@@ -1,7 +1,9 @@
 <?php
 namespace Nibble\NibbleForms\Field;
 
-abstract class BaseOptions extends FormField
+use Nibble\NibbleForms\Field;
+
+abstract class BaseOptions extends Field
 {
 
     protected $label, $options = array();

@@ -1,0 +1,17 @@
+{
+    "name" : "nibble/nibble-forms",
+    "description": "PHP form library to generate and validate HTML5 forms",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "homepage": "https://github.com/LRotherfield/Nibble-Forms",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Luke Rotherfield",
+            "email": "luke@lrotherfield.com",
+            "homepage": "http://lrotherfield.com",
+            "role": "Developer"
+        }
+    ]
+}

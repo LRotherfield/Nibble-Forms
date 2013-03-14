@@ -6,6 +6,9 @@
     },
     "homepage": "https://github.com/LRotherfield/Nibble-Forms",
     "license": "MIT",
+    "autoload": {
+        "psr-0": {"Nibble": ""}
+    },
     "authors": [
         {
             "name": "Luke Rotherfield",

@@ -255,6 +255,11 @@ class NibbleForm
 
         return $this->valid;
     }
+    
+    public function getData($key)
+    {
+        return isset($this->data[$key]) ? $this->data[$key] : false;
+    }
 
     /**
      * Render the entire form including submit button, errors, form tags etc

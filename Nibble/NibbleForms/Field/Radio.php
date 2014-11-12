@@ -20,7 +20,7 @@ class Radio extends Options
 
         return array(
             'messages' => !empty($this->custom_error) && !empty($this->error) ? $this->custom_error : $this->error,
-            'label' => $this->label == false ? false : sprintf('<label class="%s">%s</p>', $class, $this->label),
+            'label' => $this->label == false ? false : sprintf('<label class="%s">%s</label>', $class, $this->label),
             'field' => $field,
             'html' => $this->html
         );
